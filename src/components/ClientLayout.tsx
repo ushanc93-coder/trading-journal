@@ -8,7 +8,7 @@ import { SettingsProvider, useSettingsContext } from "@/lib/SettingsContext";
 import AddTradeModal from "@/components/AddTradeModal";
 import { LayoutDashboard, Target, CalendarDays, Settings, Search, Bell, BookOpen, FileText, BarChart2, Briefcase, Plus, RefreshCw, Shapes } from "lucide-react";
 
-function Sidebar() {
+function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen: boolean, setIsSidebarOpen: (v: boolean) => void }) {
   const pathname = usePathname();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addTrade } = useTradesContext();
@@ -26,10 +26,11 @@ function Sidebar() {
 
   return (
     <>
-      <aside className="w-64 border-r border-[var(--border)] bg-[#111115] flex flex-col h-screen overflow-y-auto">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:relative lg:translate-x-0 transition-transform duration-200 ease-in-out border-r border-[var(--border)] bg-[#111115] flex flex-col h-screen overflow-y-auto`}>
         <div className="h-16 flex items-center px-6 mb-2 mt-2">
           <Target className="w-6 h-6 text-[var(--primary)] mr-2" />
           <span className="font-bold text-xl tracking-tight text-white">UC TRADE JOURNAL</span>
+          <button className="lg:hidden ml-auto text-zinc-400 p-1" onClick={() => setIsSidebarOpen(false)}><X className="w-5 h-5"/></button>
         </div>
         
         <div className="px-4 mb-6">
@@ -83,7 +84,7 @@ function Sidebar() {
   );
 }
 
-function Topbar() {
+function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
   const pathname = usePathname();
   const { accounts, activeAccountId, setActiveAccountId, isLoaded } = useSettingsContext();
   
@@ -94,12 +95,13 @@ function Topbar() {
   const activeAccount = accounts.find(a => a.id === activeAccountId) || accounts[0];
 
   return (
-    <header className="h-16 flex items-center justify-between px-8 border-b border-[var(--border)] bg-[var(--background)] sticky top-0 z-10">
+    <header className="h-16 flex items-center justify-between px-4 lg:px-8 border-b border-[var(--border)] bg-[var(--background)] sticky top-0 z-10">
       <div className="flex items-center">
-        <h1 className="text-xl font-bold text-white tracking-tight">{title}</h1>
+        <button className="lg:hidden mr-3 p-1 text-[var(--muted-foreground)] hover:text-white" onClick={onMenuClick}><Menu className="w-5 h-5" /></button>
+        <h1 className="text-lg md:text-xl font-bold text-white tracking-tight truncate max-w-[120px] sm:max-w-none">{title}</h1>
       </div>
       
-      <div className="flex items-center space-x-6">
+      <div className="flex items-center space-x-2 md:space-x-6">
         {isLoaded && activeAccount && (
           <div className="flex items-center gap-3">
             <div className="flex items-center text-sm font-medium">
@@ -135,17 +137,26 @@ function Topbar() {
 }
 
 import { ConfirmProvider } from "@/lib/ConfirmContext";
+import { Menu, X } from "lucide-react";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <ConfirmProvider>
       <SettingsProvider>
         <TradesProvider>
-          <div className="min-h-screen flex bg-[var(--background)] text-[var(--foreground)]">
-            <Sidebar />
-            <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-              <Topbar />
-              <div className="flex-1 overflow-auto p-6 lg:p-8 bg-[#09090b]">
+          <div className="min-h-screen flex bg-[var(--background)] text-[var(--foreground)] overflow-hidden">
+            {isSidebarOpen && (
+              <div 
+                className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm" 
+                onClick={() => setIsSidebarOpen(false)} 
+              />
+            )}
+            <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+            <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+              <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
+              <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-[#09090b]">
                 {children}
               </div>
             </main>
@@ -155,3 +166,4 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     </ConfirmProvider>
   );
 }
+
