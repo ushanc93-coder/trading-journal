@@ -154,3 +154,36 @@ body {
   border-color: var(--border);
 }
 
+
+/* Sidebar Active Tab Cutout Effect */
+.sidebar-active-tab {
+  background-color: var(--background);
+  color: var(--primary) !important;
+  border-top-left-radius: 9999px;
+  border-bottom-left-radius: 9999px;
+  position: relative;
+  margin-right: -1px; /* To cover the 1px border if any */
+}
+
+.sidebar-active-tab::before,
+.sidebar-active-tab::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+.sidebar-active-tab::before {
+  top: -20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 10px 10px 0 10px var(--background);
+}
+
+.sidebar-active-tab::after {
+  bottom: -20px;
+  border-top-right-radius: 20px;
+  box-shadow: 10px -10px 0 10px var(--background);
+}

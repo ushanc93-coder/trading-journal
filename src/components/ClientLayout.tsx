@@ -26,7 +26,7 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen: boolean, 
 
   return (
     <>
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:relative lg:translate-x-0 transition-transform duration-200 ease-in-out border-r border-[var(--border)] bg-[#111115] flex flex-col h-screen overflow-y-auto`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:relative lg:translate-x-0 transition-transform duration-200 ease-in-out bg-[var(--card)] flex flex-col h-screen overflow-y-auto`}>
         <div className="h-16 flex items-center px-6 mb-2 mt-2">
           <Target className="w-6 h-6 text-[var(--primary)] mr-2" />
           <span className="font-bold text-xl tracking-tight text-white">UC TRADE JOURNAL</span>
@@ -43,7 +43,7 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen: boolean, 
           </button>
         </div>
         
-        <nav className="flex-1 px-3 space-y-1">
+        <nav className="flex-1 pl-4 space-y-2 mt-4">
           {links.map((link) => {
             const isActive = pathname === link.href;
             const Icon = link.icon;
@@ -51,13 +51,13 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen: boolean, 
               <Link
                 key={link.name}
                 href={link.href}
-                className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
+                className={`flex items-center pl-6 py-3.5 text-sm font-semibold tracking-wide uppercase transition-all duration-300 ${
                   isActive 
-                    ? "bg-[var(--muted)]/80 text-white border-l-2 border-[var(--primary)]" 
-                    : "text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 hover:text-zinc-200"
+                    ? "sidebar-active-tab font-bold shadow-sm" 
+                    : "text-[var(--muted-foreground)] hover:text-zinc-200 rounded-l-full hover:bg-[var(--muted)]/20 mr-4"
                 }`}
               >
-                <Icon className={`w-4 h-4 mr-3 ${isActive ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}`} />
+                <Icon className={`w-5 h-5 mr-4 ${isActive ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]"}`} />
                 {link.name}
               </Link>
             );
@@ -156,7 +156,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
             <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
               <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
-              <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-[#09090b]">
+              <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-[var(--background)]">
                 {children}
               </div>
             </main>
@@ -166,4 +166,5 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     </ConfirmProvider>
   );
 }
+
 
