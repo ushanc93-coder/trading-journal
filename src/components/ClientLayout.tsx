@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { TradesProvider, useTradesContext } from "@/lib/TradesContext";
 import { SettingsProvider, useSettingsContext } from "@/lib/SettingsContext";
 import AddTradeModal from "@/components/AddTradeModal";
@@ -43,7 +44,7 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen: boolean, 
           </button>
         </div>
         
-        <nav className="flex-1 pl-4 space-y-2 mt-4">
+        <nav className="flex-1 pl-4 space-y-2 mt-4 relative">
           {links.map((link) => {
             const isActive = pathname === link.href;
             const Icon = link.icon;
@@ -51,14 +52,24 @@ function Sidebar({ isSidebarOpen, setIsSidebarOpen }: { isSidebarOpen: boolean, 
               <Link
                 key={link.name}
                 href={link.href}
-                className={`flex items-center pl-6 py-3.5 text-sm font-semibold tracking-wide uppercase transition-all duration-300 ${
+                className={`relative flex items-center pl-6 py-3.5 text-sm font-semibold tracking-wide uppercase transition-colors z-10 ${
                   isActive 
-                    ? "sidebar-active-tab font-bold shadow-sm" 
-                    : "text-[var(--muted-foreground)] hover:text-zinc-200 rounded-l-full hover:bg-[var(--muted)]/20 mr-4"
+                    ? "text-[var(--primary)] font-bold" 
+                    : "text-[var(--muted-foreground)] hover:text-zinc-200 hover:bg-[var(--muted)]/10 mr-4 rounded-full"
                 }`}
               >
-                <Icon className={`w-5 h-5 mr-4 ${isActive ? "text-[var(--primary)]" : "text-[var(--muted-foreground)]"}`} />
-                {link.name}
+                {isActive && (
+                  <motion.div
+                    layoutId="active-sidebar-tab"
+                    className="sidebar-active-tab absolute inset-0 -z-10 shadow-sm"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  />
+                )}
+                <Icon className="w-5 h-5 mr-4 relative z-10" />
+                <span className="relative z-10">{link.name}</span>
               </Link>
             );
           })}
@@ -166,5 +177,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     </ConfirmProvider>
   );
 }
+
 
 
