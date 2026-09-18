@@ -1,0 +1,156 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-border: var(--border);
+  
+  --color-win: #10b981;
+  --color-loss: #ef4444;
+  --color-be: #f59e0b;
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  /* 01 Modern Purple (Dark - Default) */
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #18181b;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --border: #27272a;
+  --primary: #8B5CF6;
+  --primary-foreground: #ffffff;
+}
+
+[data-theme="dark-blue"] {
+  /* 06 Deep Blue */
+  --background: #0B1220;
+  --foreground: #EFF6FF;
+  --card: #172554;
+  --muted: #1e3a8a;
+  --muted-foreground: #93C5FD;
+  --border: #1e3a8a;
+  --primary: #2563EB;
+  --primary-foreground: #ffffff;
+}
+
+[data-theme="dark-teal"] {
+  /* 08 Teal Harmony */
+  --background: #134E4A;
+  --foreground: #F0FDFA;
+  --card: #0f766e;
+  --muted: #115e59;
+  --muted-foreground: #99F6E4;
+  --border: #115e59;
+  --primary: #14B8A6;
+  --primary-foreground: #ffffff;
+}
+
+[data-theme="dark-royal"] {
+  /* 09 Royal Dark */
+  --background: #111827;
+  --foreground: #EDE9FE;
+  --card: #1f2937;
+  --muted: #374151;
+  --muted-foreground: #A78BFA;
+  --border: #374151;
+  --primary: #6D28D9;
+  --primary-foreground: #ffffff;
+}
+
+[data-theme="dark-neutral"] {
+  /* 10 Minimal Neutral */
+  --background: #111827;
+  --foreground: #F3F4F6;
+  --card: #1f2937;
+  --muted: #374151;
+  --muted-foreground: #D1D5DB;
+  --border: #374151;
+  --primary: #6B7280;
+  --primary-foreground: #ffffff;
+}
+
+[data-theme="light-ocean"] {
+  /* 02 Ocean Breeze */
+  --background: #E0F2FE;
+  --foreground: #0F172A;
+  --card: #ffffff;
+  --muted: #BAE6FD;
+  --muted-foreground: #0369A1;
+  --border: #7DD3FC;
+  --primary: #0EA5E9;
+  --primary-foreground: #ffffff;
+}
+
+[data-theme="light-green"] {
+  /* 03 Nature Green */
+  --background: #F0FDF4;
+  --foreground: #14532D;
+  --card: #ffffff;
+  --muted: #BBF7D0;
+  --muted-foreground: #166534;
+  --border: #86EFAC;
+  --primary: #16A34A;
+  --primary-foreground: #ffffff;
+}
+
+[data-theme="light-sunset"] {
+  /* 04 Sunset Vibes */
+  --background: #FFF7ED;
+  --foreground: #7C2D12;
+  --card: #ffffff;
+  --muted: #FDBA74;
+  --muted-foreground: #9A3412;
+  --border: #FDBA74;
+  --primary: #F97316;
+  --primary-foreground: #ffffff;
+}
+
+[data-theme="light-pink"] {
+  /* 05 Blush Pink */
+  --background: #FDF2F8;
+  --foreground: #831843;
+  --card: #ffffff;
+  --muted: #FBCFE8;
+  --muted-foreground: #9D174D;
+  --border: #F9A8D4;
+  --primary: #EC4899;
+  --primary-foreground: #ffffff;
+}
+
+[data-theme="light-yellow"] {
+  /* 07 Bright Yellow */
+  --background: #FEFBEB;
+  --foreground: #713F12;
+  --card: #ffffff;
+  --muted: #FDE68A;
+  --muted-foreground: #854D0E;
+  --border: #FCD34D;
+  --primary: #EAB308;
+  --primary-foreground: #ffffff;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+* {
+  border-color: var(--border);
+}
+
