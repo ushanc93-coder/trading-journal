@@ -66,7 +66,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isLoaded) {
-      document.documentElement.setAttribute("data-theme", preferences.theme || "dark-purple");
+      document.documentElement.setAttribute("data-theme", preferences.theme === "light" ? "light" : "dark");
     }
   }, [preferences.theme, isLoaded]);
 
@@ -124,5 +124,6 @@ export function useSettingsContext() {
   }
   return context;
 }
+
 
 

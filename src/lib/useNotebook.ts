@@ -9,6 +9,7 @@ export interface Note {
   content: string;
   category?: string;
   coverImage?: string;
+  coverPosition?: number;
   images?: string[];
   updatedAt: string;
   aiSummary?: string;

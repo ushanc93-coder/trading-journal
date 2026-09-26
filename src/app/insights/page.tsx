@@ -6,8 +6,27 @@ import { useState, useEffect } from "react";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie
 } from "recharts";
-import { BrainCircuit, AlertTriangle, Target, Lightbulb, Sparkles, Loader2 } from "lucide-react";
+import { BrainCircuit, AlertTriangle, Target, Lightbulb, Sparkles, Loader2, Info } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const value = payload[0].value;
+    const isLoss = value < 0;
+    // Format value based on what we're displaying (PnL vs %)
+    const formattedValue = payload[0].name === 'winRate' ? `${value}%` : `${isLoss ? '-' : ''}$${Math.abs(value).toFixed(2)}`;
+    return (
+      <div className="bg-[var(--card)]/80 backdrop-blur-md border border-[var(--border)] p-4 rounded-xl shadow-xl">
+        <p className="text-[var(--muted-foreground)] font-medium text-sm mb-1">{label}</p>
+        <p className={`text-lg font-bold ${isLoss ? 'text-[var(--loss)]' : 'text-[var(--profit)]'}`}>
+          {formattedValue}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function InsightsPage() {
   const { trades, isLoaded } = useTradesContext();
@@ -152,7 +171,7 @@ Format your response in Markdown with NO JSON. Keep it punchy, honest, and highl
 
   if (trades.length === 0) {
     return (
-      <div className="p-8 text-center text-[var(--muted-foreground)] bg-[var(--card)] rounded-xl border border-[var(--border)]">
+      <div className="p-8 text-center text-[var(--muted-foreground)] bg-[var(--card)] rounded-3xl border border-[var(--border)]">
         No data available to generate insights. Add some trades first!
       </div>
     );
@@ -162,11 +181,11 @@ Format your response in Markdown with NO JSON. Keep it punchy, honest, and highl
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">UC Insights</h2>
+          <h2 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">UC Insights</h2>
           <p className="text-[var(--muted-foreground)] mt-1">AI-driven analysis of your trading psychology and execution habits.</p>
         </div>
         {isGenerating && (
-          <div className="flex items-center px-4 py-2 bg-[var(--primary)]/50 text-white rounded-md text-sm font-medium">
+          <div className="flex items-center px-4 py-2 bg-[var(--primary)]/50 text-white rounded-3xl text-sm font-medium">
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             Analyzing Data...
           </div>
@@ -174,17 +193,17 @@ Format your response in Markdown with NO JSON. Keep it punchy, honest, and highl
       </div>
 
       {/* Actionable Advice Box */}
-      <div className="bg-gradient-to-r from-[var(--primary)]/10 to-[var(--primary)]/10 border border-[var(--primary)]/30 p-6 md:p-8 rounded-xl relative shadow-lg">
+      <div className="bg-gradient-to-r from-[var(--primary)]/10 to-[var(--primary)]/10 border border-[var(--primary)]/30 p-6 md:p-8 rounded-3xl relative shadow-lg">
         <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
           <Lightbulb className="w-32 h-32 text-[var(--primary)]" />
         </div>
         <div className="flex flex-col md:flex-row items-start gap-4 relative z-10">
-          <div className="p-4 bg-[var(--primary)]/20 rounded-xl shrink-0 border border-[var(--primary)]/30">
+          <div className="p-4 bg-[var(--primary)]/20 rounded-3xl shrink-0 border border-[var(--primary)]/30">
             <Lightbulb className="w-8 h-8 text-[var(--primary)]" />
           </div>
           <div className="w-full">
-            <h3 className="text-xl font-bold text-white mb-2">Real-Time Psychoanalysis</h3>
-            <div className="text-[var(--foreground)] leading-relaxed text-sm md:text-base prose prose-invert prose-indigo max-w-none">
+            <h3 className="text-xl font-bold text-[var(--foreground)] mb-2">Real-Time Psychoanalysis</h3>
+            <div className="text-[var(--foreground)] leading-relaxed text-sm md:text-base prose prose-headings:text-[var(--foreground)] prose-p:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[var(--foreground)] prose-a:text-[var(--primary)] max-w-none">
               {aiInsight ? (
                 <ReactMarkdown>{aiInsight}</ReactMarkdown>
               ) : (
@@ -197,40 +216,67 @@ Format your response in Markdown with NO JSON. Keep it punchy, honest, and highl
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Discipline Score */}
-        <div className="bg-[var(--card)] p-6 rounded-xl border border-[var(--border)] flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="bg-[var(--card)] p-6 rounded-3xl border border-[var(--border)] flex flex-col items-center justify-center relative">
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <Target className="w-24 h-24 text-[var(--primary)]" />
           </div>
-          <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-2">Discipline Score</h3>
-          <div className="text-5xl font-bold text-white mb-2">{disciplineScore}%</div>
+          <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-2 flex items-center relative z-20">
+          Discipline Score
+          <div className="group relative flex items-center">
+            <Info className="cursor-help w-3 h-3 ml-1" />
+            <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity w-48 p-2 bg-[var(--foreground)] text-[var(--background)] text-xs rounded-md shadow-lg z-50 text-center font-normal whitespace-normal">
+              The percentage of trades where you successfully followed all of your trading rules.
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--foreground)]"></div>
+            </div>
+          </div>
+        </h3>
+          <div className="text-5xl font-bold text-[var(--foreground)] mb-2">{disciplineScore}%</div>
           <p className="text-xs text-[var(--muted-foreground)] text-center">You followed your rules on {rulesFollowed} out of {trades.length} trades.</p>
           
           <div className="w-full bg-[var(--muted)] rounded-full h-2 mt-4">
             <div 
-              className={`h-2 rounded-full ${disciplineScore >= 80 ? 'bg-emerald-500' : disciplineScore >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`} 
+              className={`h-2 rounded-full ${disciplineScore >= 80 ? 'bg-[var(--win)]' : disciplineScore >= 50 ? 'bg-amber-500' : 'bg-[var(--loss)]'}`} 
               style={{ width: `${disciplineScore}%` }}
             ></div>
           </div>
         </div>
 
         {/* Top Mistake */}
-        <div className="bg-[var(--card)] p-6 rounded-xl border border-rose-500/20 flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="bg-[var(--card)] p-6 rounded-3xl border border-[var(--loss)]/30 flex flex-col items-center justify-center relative">
           <div className="absolute top-0 right-0 p-4 opacity-10">
-            <AlertTriangle className="w-24 h-24 text-rose-500" />
+            <AlertTriangle className="w-24 h-24 text-[var(--loss)]" />
           </div>
-          <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-2">Most Frequent Mistake</h3>
-          <div className="text-3xl font-bold text-rose-500 text-center capitalize">{topMistake[0]}</div>
+          <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-2 flex items-center relative z-20">
+          Most Frequent Mistake
+          <div className="group relative flex items-center">
+            <Info className="cursor-help w-3 h-3 ml-1" />
+            <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity w-48 p-2 bg-[var(--foreground)] text-[var(--background)] text-xs rounded-md shadow-lg z-50 text-center font-normal whitespace-normal">
+              The most common psychological or execution error you make that costs you money.
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--foreground)]"></div>
+            </div>
+          </div>
+        </h3>
+          <div className="text-3xl font-bold text-[var(--loss)] text-center capitalize">{topMistake[0]}</div>
           {topMistake[1] > 0 && (
             <p className="text-xs text-[var(--muted-foreground)] text-center mt-2">Occurred {topMistake[1]} times. Focus on eliminating this to improve your edge.</p>
           )}
         </div>
 
         {/* Psychological Edge */}
-        <div className="bg-[var(--card)] p-6 rounded-xl border border-[var(--border)] flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="bg-[var(--card)] p-6 rounded-3xl border border-[var(--border)] flex flex-col items-center justify-center relative">
           <div className="absolute top-0 right-0 p-4 opacity-10">
             <BrainCircuit className="w-24 h-24 text-blue-500" />
           </div>
-          <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-2">Best Emotional State</h3>
+          <h3 className="text-sm font-medium text-[var(--muted-foreground)] mb-2 flex items-center relative z-20">
+          Best Emotional State
+          <div className="group relative flex items-center">
+            <Info className="cursor-help w-3 h-3 ml-1" />
+            <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity w-48 p-2 bg-[var(--foreground)] text-[var(--background)] text-xs rounded-md shadow-lg z-50 text-center font-normal whitespace-normal">
+              The psychological state of mind in which you statistically produce the highest win rate.
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--foreground)]"></div>
+            </div>
+          </div>
+        </h3>
           <div className="text-3xl font-bold text-blue-400 text-center">
             {emotionData.sort((a, b) => b.pnl - a.pnl)[0]?.name || "N/A"}
           </div>
@@ -241,20 +287,16 @@ Format your response in Markdown with NO JSON. Keep it punchy, honest, and highl
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* P&L by Emotion */}
-        <div className="bg-[var(--card)] p-6 rounded-xl border border-[var(--border)]">
-          <h3 className="text-lg font-bold text-white mb-6">P&L by Emotion</h3>
+        <div className="bg-[var(--card)] p-6 rounded-3xl border border-[var(--border)]">
+          <h3 className="text-lg font-bold text-[var(--foreground)] mb-6">P&L by Emotion</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={emotionData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                <XAxis dataKey="name" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '4px' }}
-                  itemStyle={{ color: '#fafafa' }}
-                  cursor={{ fill: '#27272a', opacity: 0.4 }}
-                />
-                <Bar dataKey="pnl" radius={[4, 4, 0, 0]}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "var(--muted)", opacity: 0.2 }} />
+                <Bar dataKey="pnl" radius={[6, 6, 0, 0]}>
                   {emotionData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.pnl >= 0 ? '#3b82f6' : '#ef4444'} />
                   ))}
@@ -265,20 +307,16 @@ Format your response in Markdown with NO JSON. Keep it punchy, honest, and highl
         </div>
 
         {/* Win Rate by Session */}
-        <div className="bg-[var(--card)] p-6 rounded-xl border border-[var(--border)]">
-          <h3 className="text-lg font-bold text-white mb-6">Win Rate by Session</h3>
+        <div className="bg-[var(--card)] p-6 rounded-3xl border border-[var(--border)]">
+          <h3 className="text-lg font-bold text-[var(--foreground)] mb-6">Win Rate by Session</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={sessionData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                <XAxis dataKey="name" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '4px' }}
-                  itemStyle={{ color: '#fafafa' }}
-                  cursor={{ fill: '#27272a', opacity: 0.4 }}
-                />
-                <Bar dataKey="winRate" fill="#a855f7" radius={[4, 4, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "var(--muted)", opacity: 0.2 }} />
+                <Bar dataKey="winRate" fill="#a855f7" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

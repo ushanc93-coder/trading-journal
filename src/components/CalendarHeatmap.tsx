@@ -36,31 +36,31 @@ export default function CalendarHeatmap({ trades }: CalendarHeatmapProps) {
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="bg-[var(--card)] rounded-md border border-[var(--border)] flex flex-col h-full">
+    <div className="bg-[var(--card)] rounded-3xl border border-[var(--border)] flex flex-col h-full min-h-[500px]">
       <div className="flex items-center p-4 border-b border-[var(--border)]">
-        <h2 className="text-lg font-bold text-white mr-4">{format(currentDate, 'MMMM yyyy')}</h2>
+        <h2 className="text-lg font-bold text-[var(--foreground)] mr-4">{format(currentDate, 'MMMM yyyy')}</h2>
         <div className="flex space-x-1">
-          <button onClick={prevMonth} className="p-1 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-white">
+          <button onClick={prevMonth} className="p-1 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <button onClick={nextMonth} className="p-1 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-white">
+          <button onClick={nextMonth} className="p-1 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-6 flex flex-col">
         {/* Days Header */}
-        <div className="grid grid-cols-7 mb-2">
+        <div className="grid grid-cols-7 gap-2 mb-4 pb-2 border-b border-[var(--border)]">
           {weekDays.map(day => (
-            <div key={day} className="text-center text-xs font-medium text-[var(--muted-foreground)] py-2 border-b border-[var(--border)]">
+            <div key={day} className="text-center text-xs font-medium text-[var(--muted-foreground)]">
               {day}
             </div>
           ))}
         </div>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-2 flex-1 auto-rows-fr">
           {paddingDays.map((_, i) => (
             <div key={`empty-${i}`} className="min-h-[80px]"></div>
           ))}
@@ -74,26 +74,34 @@ export default function CalendarHeatmap({ trades }: CalendarHeatmapProps) {
             // Determine cell color
             let bgColor = "bg-[var(--card)]/50 border border-[var(--border)]/50"; // Empty/No trades
             let textColor = "text-[var(--muted-foreground)]";
+            let numColor = "text-[var(--muted-foreground)]";
+            let subColor = "text-[var(--muted-foreground)]";
             
             if (dayTrades.length > 0) {
               if (totalPnL > 0) {
-                bgColor = "bg-emerald-900/20 border border-emerald-500/20"; // Light green tinted background
+                bgColor = "bg-[var(--win)]/10 border border-[var(--win)]/30 dark:bg-[var(--win)]/10 dark:border-[var(--win)]/20";
                 textColor = "text-[var(--win)]";
+                numColor = "text-[var(--win)]/60";
+                subColor = "text-[var(--win)]/80";
               } else if (totalPnL < 0) {
-                bgColor = "bg-rose-900/20 border border-rose-500/20"; // Light red tinted background
+                bgColor = "bg-[var(--loss)]/10 border border-[var(--loss)]/30 dark:bg-[var(--loss)]/10 dark:border-[var(--loss)]/20";
                 textColor = "text-[var(--loss)]";
+                numColor = "text-[var(--loss)]/60";
+                subColor = "text-[var(--loss)]/80";
               } else {
-                bgColor = "bg-[var(--muted)] border border-[var(--border)]";
+                bgColor = "bg-[var(--be)]/10 border border-[var(--be)]/30 dark:bg-[var(--be)]/10 dark:border-[var(--be)]/20";
                 textColor = "text-[var(--be)]";
+                numColor = "text-[var(--be)]/60";
+                subColor = "text-[var(--be)]/80";
               }
             }
 
             return (
               <div 
                 key={dateStr} 
-                className={`relative min-h-[80px] p-2 rounded-xl flex flex-col justify-between transition-colors hover:brightness-125 ${bgColor}`}
+                className={`relative min-h-[80px] p-2 rounded-xl flex flex-col justify-between transition-colors hover:brightness-[0.95] dark:hover:brightness-125 ${bgColor}`}
               >
-                <div className={`text-xs font-semibold self-end ${isToday(day) ? 'bg-[var(--primary)] text-white w-5 h-5 flex items-center justify-center rounded-full' : 'text-[var(--muted-foreground)]'}`}>
+                <div className={`text-xs font-semibold self-end ${isToday(day) ? "bg-[var(--primary)] text-white w-5 h-5 flex items-center justify-center rounded-full" : numColor}`}>
                   {format(day, 'd')}
                 </div>
                 
@@ -102,7 +110,7 @@ export default function CalendarHeatmap({ trades }: CalendarHeatmapProps) {
                     <div className={`font-bold text-sm ${textColor}`}>
                       {totalPnL >= 0 ? '+' : ''}${totalPnL.toLocaleString()}
                     </div>
-                    <div className="text-[10px] text-[var(--muted-foreground)]">
+                    <div className={`text-[10px] font-medium ${subColor}`}>
                       {dayTrades.length} {dayTrades.length === 1 ? 'trade' : 'trades'}
                     </div>
                   </div>
@@ -115,3 +123,8 @@ export default function CalendarHeatmap({ trades }: CalendarHeatmapProps) {
     </div>
   );
 }
+
+
+
+
+

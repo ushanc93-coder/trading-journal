@@ -13,9 +13,9 @@
   
   --color-border: var(--border);
   
-  --color-win: #10b981;
-  --color-loss: #ef4444;
-  --color-be: #f59e0b;
+  --color-win: var(--win);
+  --color-loss: var(--loss);
+  --color-be: var(--be);
   
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -25,165 +25,137 @@
 }
 
 :root {
-  /* 01 Modern Purple (Dark - Default) */
-  --background: #09090b;
-  --foreground: #fafafa;
-  --card: #18181b;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --border: #27272a;
-  --primary: #8B5CF6;
+  color-scheme: dark;
+
+  /* DARK THEME (Default) */
+  --background: #0f111a;
+  --foreground: #ffffff;
+  --card: #1a1c29;
+  --muted: #262938;
+  --muted-foreground: #8a8d9e;
+  --border: #262938;
+    --primary: #3b82f6;
   --primary-foreground: #ffffff;
+  
+  --win: #10b981;
+  --loss: #ef4444;
+  --be: #f59e0b;
 }
 
-[data-theme="dark-blue"] {
-  /* 06 Deep Blue */
-  --background: #0B1220;
-  --foreground: #EFF6FF;
-  --card: #172554;
-  --muted: #1e3a8a;
-  --muted-foreground: #93C5FD;
-  --border: #1e3a8a;
-  --primary: #2563EB;
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* COOL GRAY / DIM THEME */
+  --background: #CBD5E1;      /* Slate 300 */
+  --card: #E2E8F0;            /* Slate 200 */
+  --foreground: #0F172A;      /* Slate 900 */
+  --muted: #94A3B8;           /* Slate 400 */
+  --muted-foreground: #334155;/* Slate 700 */
+  --border: #94A3B8;          /* Slate 400 */
+  --primary: #4338CA;         /* Indigo 700 */
   --primary-foreground: #ffffff;
+  
+  --win: #1E8555;             /* Professional Medium-Deep Green (Perfect Middle Ground) */
+  --loss: #BA2C2C;            /* Professional Crimson Red (Perfect Middle Ground) */
+  --be: #A16207;              
 }
 
-[data-theme="dark-teal"] {
-  /* 08 Teal Harmony */
-  --background: #134E4A;
-  --foreground: #F0FDFA;
-  --card: #0f766e;
-  --muted: #115e59;
-  --muted-foreground: #99F6E4;
-  --border: #115e59;
-  --primary: #14B8A6;
-  --primary-foreground: #ffffff;
-}
-
-[data-theme="dark-royal"] {
-  /* 09 Royal Dark */
-  --background: #111827;
-  --foreground: #EDE9FE;
-  --card: #1f2937;
-  --muted: #374151;
-  --muted-foreground: #A78BFA;
-  --border: #374151;
-  --primary: #6D28D9;
-  --primary-foreground: #ffffff;
-}
-
-[data-theme="dark-neutral"] {
-  /* 10 Minimal Neutral */
-  --background: #111827;
-  --foreground: #F3F4F6;
-  --card: #1f2937;
-  --muted: #374151;
-  --muted-foreground: #D1D5DB;
-  --border: #374151;
-  --primary: #6B7280;
-  --primary-foreground: #ffffff;
-}
-
-[data-theme="light-ocean"] {
-  /* 02 Ocean Breeze */
-  --background: #E0F2FE;
-  --foreground: #0F172A;
-  --card: #ffffff;
-  --muted: #BAE6FD;
-  --muted-foreground: #0369A1;
-  --border: #7DD3FC;
-  --primary: #0EA5E9;
-  --primary-foreground: #ffffff;
-}
-
-[data-theme="light-green"] {
-  /* 03 Nature Green */
-  --background: #F0FDF4;
-  --foreground: #14532D;
-  --card: #ffffff;
-  --muted: #BBF7D0;
-  --muted-foreground: #166534;
-  --border: #86EFAC;
-  --primary: #16A34A;
-  --primary-foreground: #ffffff;
-}
-
-[data-theme="light-sunset"] {
-  /* 04 Sunset Vibes */
-  --background: #FFF7ED;
-  --foreground: #7C2D12;
-  --card: #ffffff;
-  --muted: #FDBA74;
-  --muted-foreground: #9A3412;
-  --border: #FDBA74;
-  --primary: #F97316;
-  --primary-foreground: #ffffff;
-}
-
-[data-theme="light-pink"] {
-  /* 05 Blush Pink */
-  --background: #FDF2F8;
-  --foreground: #831843;
-  --card: #ffffff;
-  --muted: #FBCFE8;
-  --muted-foreground: #9D174D;
-  --border: #F9A8D4;
-  --primary: #EC4899;
-  --primary-foreground: #ffffff;
-}
-
-[data-theme="light-yellow"] {
-  /* 07 Bright Yellow */
-  --background: #FEFBEB;
-  --foreground: #713F12;
-  --card: #ffffff;
-  --muted: #FDE68A;
-  --muted-foreground: #854D0E;
-  --border: #FCD34D;
-  --primary: #EAB308;
-  --primary-foreground: #ffffff;
-}
-
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-}
-
-* {
-  border-color: var(--border);
-}
-
-
-/* Sidebar Active Tab Cutout Effect */
+/* Sidebar Active Tab */
 .sidebar-active-tab {
   background-color: var(--background);
-  color: var(--primary) !important;
   border-top-left-radius: 9999px;
   border-bottom-left-radius: 9999px;
-  position: relative;
-  margin-right: -1px; /* To cover the 1px border if any */
 }
 
-.sidebar-active-tab::before,
-.sidebar-active-tab::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  width: 20px;
-  height: 20px;
-  background-color: transparent;
-  pointer-events: none;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Global Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-foreground) var(--background);
 }
 
-.sidebar-active-tab::before {
-  top: -20px;
-  border-bottom-right-radius: 20px;
-  box-shadow: 10px 10px 0 10px var(--background);
+
+/* Hide native number spinners */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
-.sidebar-active-tab::after {
-  bottom: -20px;
-  border-top-right-radius: 20px;
-  box-shadow: 10px -10px 0 10px var(--background);
+/* Custom Scrollbar for better integration */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+
+/* Force color scheme on date inputs for native calendar popups */
+input[type="date"], input[type="datetime-local"] {
+  color-scheme: dark;
+}
+[data-theme="light"] input[type="date"], [data-theme="light"] input[type="datetime-local"] {
+  color-scheme: light;
+}
+
+
+/* Premium Animations */
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-zoom-in {
+  animation: zoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

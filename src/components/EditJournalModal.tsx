@@ -69,17 +69,17 @@ export default function EditJournalModal({ isOpen, onClose, onSave, entry }: Edi
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="bg-[var(--card)] w-full max-w-xl rounded-xl border border-[var(--border)] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center px-6 py-4 border-b border-[var(--border)] bg-[var(--card)]/50">
-          <h2 className="text-xl font-bold text-white">Edit Journal Entry</h2>
-          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-white transition-colors">
+          <h2 className="text-xl font-bold text-[var(--foreground)]">Edit Journal Entry</h2>
+          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
         
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {Object.keys(errors).length > 0 && (
-            <div className="bg-rose-500/10 border border-rose-500/50 rounded-lg p-3 flex items-start">
-              <AlertCircle className="w-5 h-5 text-rose-500 mt-0.5 mr-2 shrink-0" />
-              <p className="text-sm text-rose-500">Please fill in all required fields highlighted in red.</p>
+            <div className="bg-[var(--loss)]/20 border border-[var(--loss)]/30 rounded-lg p-3 flex items-start">
+              <AlertCircle className="w-5 h-5 text-[var(--loss)] mt-0.5 mr-2 shrink-0" />
+              <p className="text-sm text-[var(--loss)]">Please fill in all required fields highlighted in red.</p>
             </div>
           )}
 
@@ -90,7 +90,7 @@ export default function EditJournalModal({ isOpen, onClose, onSave, entry }: Edi
                 type="date"
                 value={formData.date}
                 onChange={e => setFormData({...formData, date: e.target.value})}
-                className={`w-full bg-[var(--card)] border rounded-md px-3 py-2 text-white focus:outline-none focus:border-[var(--primary)] ${errors.date ? '!border-rose-500' : 'border-[var(--border)]'}`}
+                className={`w-full bg-[var(--card)] border rounded-md px-3 py-2 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] ${errors.date ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}`}
               />
             </div>
             <div>
@@ -100,7 +100,7 @@ export default function EditJournalModal({ isOpen, onClose, onSave, entry }: Edi
                 value={formData.pair}
                 onChange={e => setFormData({...formData, pair: e.target.value.toUpperCase()})}
                 placeholder="e.g. EU"
-                className={`w-full bg-[var(--card)] border rounded-md px-3 py-2 text-white focus:outline-none focus:border-[var(--primary)] uppercase ${errors.pair ? '!border-rose-500' : 'border-[var(--border)]'}`}
+                className={`w-full bg-[var(--card)] border rounded-md px-3 py-2 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] uppercase ${errors.pair ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}`}
               />
               <datalist id="markets-list-edit">
                 <option value="EURUSD" />
@@ -131,7 +131,7 @@ export default function EditJournalModal({ isOpen, onClose, onSave, entry }: Edi
               <select
                 value={formData.session}
                 onChange={e => setFormData({...formData, session: e.target.value})}
-                className="w-full bg-[var(--card)] border border-[var(--border)] rounded-md px-3 py-2 text-white focus:outline-none focus:border-[var(--primary)]"
+                className="w-full bg-[var(--card)] border border-[var(--border)] rounded-md px-3 py-2 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]"
               >
                 <option>Asian</option>
                 <option>London</option>
@@ -157,8 +157,8 @@ export default function EditJournalModal({ isOpen, onClose, onSave, entry }: Edi
                     onClick={() => setFormData({...formData, [rule.key]: !val})}
                     className={`flex flex-col items-center justify-center p-2 rounded border transition-colors ${
                       val 
-                        ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' 
-                        : 'bg-rose-500/10 text-rose-500 border-rose-500/30'
+                        ? 'bg-[var(--win)]/20 text-[var(--win)] border-[var(--win)]/30' 
+                        : 'bg-[var(--loss)]/20 text-[var(--loss)] border-[var(--loss)]/30'
                     }`}
                   >
                     <span className="text-[10px] uppercase font-semibold mb-1 text-[var(--muted-foreground)]">{rule.label}</span>
@@ -175,7 +175,7 @@ export default function EditJournalModal({ isOpen, onClose, onSave, entry }: Edi
               <select 
                 value={formData.result}
                 onChange={e => setFormData({...formData, result: e.target.value as any})}
-                className="w-full bg-[var(--card)] border border-[var(--border)] rounded-md px-3 py-2 text-white focus:outline-none focus:border-[var(--primary)]"
+                className="w-full bg-[var(--card)] border border-[var(--border)] rounded-md px-3 py-2 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]"
               >
                 {results.map(r => <option key={r} value={r}>{r}</option>)}
               </select>
@@ -187,14 +187,14 @@ export default function EditJournalModal({ isOpen, onClose, onSave, entry }: Edi
                 value={formData.outcome}
                 onChange={e => setFormData({...formData, outcome: e.target.value})}
                 placeholder="Successful day"
-                className={`w-full bg-[var(--card)] border rounded-md px-3 py-2 text-white focus:outline-none focus:border-[var(--primary)] ${errors.outcome ? '!border-rose-500' : 'border-[var(--border)]'}`}
+                className={`w-full bg-[var(--card)] border rounded-md px-3 py-2 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] ${errors.outcome ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}`}
               />
             </div>
           </div>
         </div>
         
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-[var(--border)] bg-[var(--card)]/50">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-[var(--foreground)] hover:text-white transition-colors">
+          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors">
             Cancel
           </button>
           <button onClick={handleSubmit} className="px-6 py-2 text-sm font-medium bg-[var(--primary)] hover:bg-[var(--primary)] text-white rounded-lg transition-colors">

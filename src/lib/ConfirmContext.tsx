@@ -51,14 +51,14 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 w-full max-w-sm shadow-2xl transform transition-all">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-full ${modalState.danger ? 'bg-rose-500/10 text-rose-500' : 'bg-blue-500/10 text-blue-400'}`}>
+                <div className={`p-2 rounded-full ${modalState.danger ? 'bg-[var(--loss)]/20 text-[var(--loss)]' : 'bg-blue-500/10 text-blue-400'}`}>
                   <AlertCircle className="w-5 h-5" />
                 </div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 className="text-lg font-bold text-[var(--foreground)]">
                   {modalState.title || (modalState.isAlert ? 'Notice' : 'Confirm Action')}
                 </h3>
               </div>
-              <button onClick={handleCancel} className="text-[var(--muted-foreground)] hover:text-white transition-colors">
+              <button onClick={handleCancel} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -71,7 +71,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
               {!modalState.isAlert && (
                 <button 
                   onClick={handleCancel}
-                  className="px-4 py-2 text-sm font-medium text-[var(--foreground)] hover:text-white hover:bg-[var(--muted)] rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-[var(--foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] rounded-lg transition-colors"
                 >
                   {modalState.cancelText || 'Cancel'}
                 </button>
@@ -82,7 +82,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                   modalState.isAlert 
                     ? 'bg-blue-600 hover:bg-blue-700' 
                     : modalState.danger 
-                      ? 'bg-rose-600 hover:bg-rose-700' 
+                      ? 'bg-[var(--loss)] hover:bg-[var(--loss)]' 
                       : 'bg-blue-600 hover:bg-blue-700'
                 }`}
               >

@@ -45,17 +45,17 @@ export default function AnalyticsInsights({ trades }: AnalyticsInsightsProps) {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
       {/* Session Performance Bar Chart */}
-      <div className="lg:col-span-2 bg-[var(--card)] p-6 rounded-xl border border-[var(--border)] shadow-sm">
+      <div className="lg:col-span-2 bg-[var(--card)] p-6 rounded-3xl border border-[var(--border)] shadow-sm">
         <h3 className="text-lg font-semibold mb-6">Performance by Session</h3>
         <div className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={sessionData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-              <XAxis dataKey="name" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
               <RechartsTooltip 
-                contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px' }}
-                itemStyle={{ color: '#fafafa' }}
+                contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px' }}
+                itemStyle={{ color: 'var(--foreground)' }}
                 cursor={{ fill: '#27272a', opacity: 0.4 }}
               />
               <Bar dataKey="Wins" fill="var(--win)" radius={[4, 4, 0, 0]} barSize={32} />
@@ -66,7 +66,7 @@ export default function AnalyticsInsights({ trades }: AnalyticsInsightsProps) {
       </div>
 
       {/* Psychology & Discipline Insights */}
-      <div className="bg-[var(--card)] p-6 rounded-xl border border-[var(--border)] shadow-sm flex flex-col">
+      <div className="bg-[var(--card)] p-6 rounded-3xl border border-[var(--border)] shadow-sm flex flex-col">
         <h3 className="text-lg font-semibold mb-6">Psychology & Discipline</h3>
         
         <div className="flex-1 space-y-6">
@@ -77,7 +77,7 @@ export default function AnalyticsInsights({ trades }: AnalyticsInsightsProps) {
                 <ShieldCheck className="w-4 h-4 mr-1 text-[var(--primary)]" />
                 Discipline Score
               </span>
-              <span className="text-lg font-bold text-white">{disciplineScore}%</span>
+              <span className="text-lg font-bold text-[var(--foreground)]">{disciplineScore}%</span>
             </div>
             <div className="w-full bg-[var(--card)] rounded-full h-2.5">
               <div 
@@ -88,13 +88,13 @@ export default function AnalyticsInsights({ trades }: AnalyticsInsightsProps) {
           </div>
 
           {/* Emotional State Summary */}
-          <div className="p-4 bg-[var(--card)]/50 rounded-lg border border-[var(--border)]/50">
+          <div className="p-4 bg-[var(--card)]/50 rounded-3xl border border-[var(--border)]/50">
             <div className="flex items-start">
               <Brain className="w-5 h-5 text-[var(--primary)] mr-3 mt-0.5" />
               <div>
-                <h4 className="text-sm font-medium text-white">Emotional Edge</h4>
+                <h4 className="text-sm font-medium text-[var(--foreground)]">Emotional Edge</h4>
                 <p className="text-xs text-[var(--muted-foreground)] mt-1 leading-relaxed">
-                  You are most profitable when trading in a <span className="text-white font-medium">Calm</span> state. Avoid taking trades when feeling FOMO or Revenge.
+                  You are most profitable when trading in a <span className="text-[var(--foreground)] font-medium">Calm</span> state. Avoid taking trades when feeling FOMO or Revenge.
                 </p>
               </div>
             </div>

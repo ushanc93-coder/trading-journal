@@ -17,6 +17,8 @@ export default function TradeLogPage() {
   const { entries, deleteEntry, clearAllEntries } = useJournal();
   const { confirm, alert } = useConfirm();
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [editingTrade, setEditingTrade] = useState<Trade | null>(null);
   const [viewingTrade, setViewingTrade] = useState<Trade | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -28,11 +30,15 @@ export default function TradeLogPage() {
     trade.notes?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  
+  const sortedTrades = [...filteredTrades].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const totalPages = Math.ceil(sortedTrades.length / itemsPerPage);
+  const paginatedTrades = sortedTrades.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto h-full flex flex-col">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Trade Log</h2>
+          <h2 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">Trade Log</h2>
           <p className="text-[var(--muted-foreground)] mt-1">Review all your historical trades in detail.</p>
         </div>
         
@@ -43,8 +49,8 @@ export default function TradeLogPage() {
               type="text" 
               placeholder="Search symbol or notes..."
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-[var(--card)] border border-[var(--border)] rounded-md text-sm text-white focus:outline-none focus:border-[var(--primary)] transition-colors w-64"
+              onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              className="pl-9 pr-4 py-2 bg-[var(--card)] border border-[var(--border)] rounded-3xl text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors w-64"
             />
           </div>
           <button 
@@ -58,7 +64,7 @@ export default function TradeLogPage() {
                 clearAllEntries();
               }
             }}
-            className="flex items-center px-4 py-2 bg-rose-500/10 border border-rose-500/30 rounded-md text-sm font-medium text-rose-500 hover:bg-rose-500/20 transition-colors"
+            className="flex items-center px-4 py-2 bg-[var(--loss)]/20 border border-[var(--loss)]/30 rounded-3xl text-sm font-medium text-[var(--loss)] hover:bg-[var(--loss)]/20 transition-colors"
           >
             <AlertCircle className="w-4 h-4 mr-2" />
             Clear All Data
@@ -66,11 +72,12 @@ export default function TradeLogPage() {
         </div>
       </div>
 
-      <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] flex-1 overflow-hidden flex flex-col min-h-[500px]">
+      <div className="bg-[var(--card)] rounded-3xl border border-[var(--border)] flex-1 overflow-hidden flex flex-col min-h-[500px]">
         <div className="overflow-x-auto flex-1">
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-[var(--muted-foreground)] uppercase bg-[var(--card)]/80 sticky top-0 z-10 border-b border-[var(--border)]">
               <tr>
+                <th className="px-6 py-4 font-semibold">Inv No.</th>
                 <th className="px-6 py-4 font-semibold">Date</th>
                 <th className="px-6 py-4 font-semibold">Symbol</th>
                 <th className="px-6 py-4 font-semibold">Side</th>
@@ -84,15 +91,16 @@ export default function TradeLogPage() {
                 <th className="px-6 py-4 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/50">
-              {filteredTrades.length === 0 ? (
+            <tbody className="divide-y divide-[var(--border)]">
+              
+  {filteredTrades.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="px-6 py-12 text-center text-[var(--muted-foreground)]">
                     No trades found matching your search.
                   </td>
                 </tr>
               ) : (
-                filteredTrades.map((trade) => (
+                paginatedTrades.map((trade: any) => (
                   <tr 
                     key={trade.id} 
                     onClick={() => setViewingTrade(trade)}
@@ -101,12 +109,12 @@ export default function TradeLogPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-[var(--foreground)]">
                       {format(parseISO(trade.date), 'MMM dd, yyyy')}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap font-bold text-white">
+                    <td className="px-6 py-4 whitespace-nowrap font-bold text-[var(--foreground)]">
                       {trade.symbol}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        trade.direction === 'Long' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+                        trade.direction === 'Long' ? 'bg-[var(--win)]/20 text-[var(--win)]' : 'bg-[var(--loss)]/20 text-[var(--loss)]'
                       }`}>
                         {trade.direction === 'Long' ? <ArrowUp className="w-3 h-3 mr-1" /> : <ArrowDown className="w-3 h-3 mr-1" />}
                         {trade.direction}
@@ -131,7 +139,7 @@ export default function TradeLogPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`text-xs ${trade.mistake === 'None' ? 'text-zinc-600' : 'text-amber-500'}`}>
+                      <span className={`text-xs ${trade.mistake === 'None' ? 'text-[var(--muted-foreground)]' : 'text-amber-500'}`}>
                         {trade.mistake}
                       </span>
                     </td>
@@ -141,23 +149,23 @@ export default function TradeLogPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {trade.images && trade.images.length > 0 ? (
                         <div className="flex -space-x-2 overflow-hidden">
-                          {trade.images.slice(0, 3).map((url, i) => (
+                          {trade.images.slice(0, 3).map((url: string, i: number) => (
                             <img 
                               key={i} 
                               src={url} 
                               alt="ref" 
-                              className="inline-block h-8 w-8 rounded-md ring-2 ring-[var(--card)] object-cover cursor-pointer hover:scale-110 transition-transform relative z-10 hover:z-20" 
+                              className="inline-block h-8 w-8 rounded-3xl ring-2 ring-[var(--card)] object-cover cursor-pointer hover:scale-110 transition-transform relative z-10 hover:z-20" 
                               onClick={(e) => { e.stopPropagation(); setPreviewImage(url); }}
                             />
                           ))}
                           {trade.images.length > 3 && (
-                            <div className="flex items-center justify-center h-8 w-8 rounded-md ring-2 ring-[var(--card)] bg-[var(--muted)] text-xs text-white z-0 relative">
+                            <div className="flex items-center justify-center h-8 w-8 rounded-3xl ring-2 ring-[var(--card)] bg-[var(--muted)] text-xs text-[var(--foreground)] z-0 relative">
                               +{trade.images.length - 3}
                             </div>
                           )}
                         </div>
                       ) : (
-                        <span className="text-zinc-600">-</span>
+                        <span className="text-[var(--muted-foreground)]">-</span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -182,14 +190,11 @@ export default function TradeLogPage() {
                             if (ok) {
                               deleteTrade(trade.id);
                               // Sync delete: if it's the only trade for this date+pair, delete the journal entry
-                              const otherTrades = trades.filter(t => t.id !== trade.id && t.date === trade.date && t.symbol === trade.symbol);
-                              if (otherTrades.length === 0) {
-                                const j = entries.find(je => je.date === trade.date && je.pair === trade.symbol);
+                              const j = entries.find(je => je.date === trade.date && je.pair === trade.symbol);
                                 if (j) deleteEntry(j.id);
-                              }
                             }
                           }}
-                          className="p-1.5 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 rounded transition-colors"
+                          className="p-1.5 text-[var(--muted-foreground)] hover:text-[var(--loss)] hover:bg-[var(--loss)]/20 rounded transition-colors"
                           title="Delete Trade"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -203,10 +208,22 @@ export default function TradeLogPage() {
           </table>
         </div>
         <div className="p-4 border-t border-[var(--border)] bg-[var(--card)]/30 flex items-center justify-between text-sm text-[var(--muted-foreground)]">
-          <div>Showing {filteredTrades.length} trades</div>
+          <div>Showing {Math.min(filteredTrades.length, (currentPage - 1) * itemsPerPage + 1)} to {Math.min(filteredTrades.length, currentPage * itemsPerPage)} of {filteredTrades.length} trades</div>
           <div className="flex space-x-2">
-            <button className="px-3 py-1 rounded border border-[var(--border)] hover:bg-[var(--muted)] disabled:opacity-50" disabled>Previous</button>
-            <button className="px-3 py-1 rounded border border-[var(--border)] hover:bg-[var(--muted)] disabled:opacity-50" disabled>Next</button>
+            <button 
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 rounded border border-[var(--border)] hover:bg-[var(--muted)] disabled:opacity-50 transition-colors"
+            >
+              Previous
+            </button>
+            <button 
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="px-3 py-1 rounded border border-[var(--border)] hover:bg-[var(--muted)] disabled:opacity-50 transition-colors"
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

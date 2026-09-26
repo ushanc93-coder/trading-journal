@@ -1,19 +1,53 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import {  useState, useRef, useEffect } from "react";
 import { useNotebook, Note } from "@/lib/useNotebook";
+import DatePickerDropdown from "@/components/DatePickerDropdown";
+import { Check } from "lucide-react";
 import { useSettingsContext } from "@/lib/SettingsContext";
-import { Plus, Trash2, CalendarDays, Search, Save, X, Image as ImageIcon, FileText, LayoutGrid, ChevronLeft, Sparkles, Loader2 } from "lucide-react";
+import { Plus, Trash2, CalendarDays, Search, Save, X, Image as ImageIcon, FileText, LayoutGrid, ChevronLeft, Sparkles, Loader2 , ChevronDown } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import NotesCalendar from "@/components/NotesCalendar";
 import { useConfirm } from "@/lib/ConfirmContext";
 import ReactMarkdown from "react-markdown";
 
 const CATEGORIES = [
-  { name: "Educational", gradient: "from-amber-900/40 to-amber-600/10", border: "border-amber-500/30", text: "text-amber-400", shadow: "hover:shadow-amber-900/20" },
-  { name: "Strategy", gradient: "from-purple-900/40 to-[var(--primary)]/10", border: "border-[var(--primary)]/30", text: "text-[var(--primary)]", shadow: "hover:shadow-purple-900/20" },
-  { name: "Personal", gradient: "from-emerald-900/40 to-emerald-600/10", border: "border-emerald-500/30", text: "text-emerald-400", shadow: "hover:shadow-emerald-900/20" },
-  { name: "Goals", gradient: "from-blue-900/40 to-blue-600/10", border: "border-blue-500/30", text: "text-blue-400", shadow: "hover:shadow-blue-900/20" },
+  { 
+    name: "Educational", 
+    borderActive: "border-amber-600", 
+    bgActive: "bg-amber-500/10",
+    textActive: "text-amber-600",
+    hoverBorder: "hover:border-amber-500/50",
+    glow: "hover:shadow-[0_0_30px_rgba(245,158,11,0.6)]",
+    tableRowGlow: "hover:bg-amber-500/5 hover:shadow-[0_0_15px_rgba(245,158,11,0.4)]"
+  },
+  { 
+    name: "Strategy", 
+    borderActive: "border-purple-600", 
+    bgActive: "bg-purple-500/10",
+    textActive: "text-purple-600",
+    hoverBorder: "hover:border-purple-500/50",
+    glow: "hover:shadow-[0_0_30px_rgba(168,85,247,0.6)]",
+    tableRowGlow: "hover:bg-purple-500/5 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+  },
+  { 
+    name: "Personal", 
+    borderActive: "border-emerald-600", 
+    bgActive: "bg-emerald-500/10",
+    textActive: "text-emerald-600",
+    hoverBorder: "hover:border-emerald-500/50",
+    glow: "hover:shadow-[0_0_30px_rgba(16,185,129,0.6)]",
+    tableRowGlow: "hover:bg-emerald-500/5 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+  },
+  { 
+    name: "Goals", 
+    borderActive: "border-blue-600", 
+    bgActive: "bg-blue-500/10",
+    textActive: "text-blue-600",
+    hoverBorder: "hover:border-blue-500/50",
+    glow: "hover:shadow-[0_0_30px_rgba(59,130,246,0.6)]",
+    tableRowGlow: "hover:bg-blue-500/5 hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]"
+  }
 ];
 
 export default function NotebookPage() {
@@ -74,7 +108,20 @@ export default function NotebookPage() {
   const [editCategory, setEditCategory] = useState("Educational");
   const [editImages, setEditImages] = useState<string[]>([]);
   const [editCoverImage, setEditCoverImage] = useState<string | undefined>(undefined);
+  const [editCoverPosition, setEditCoverPosition] = useState<number>(50);
+  const [isRepositioning, setIsRepositioning] = useState(false);
+  const dragRef = useRef({ isDragging: false, startY: 0, startPos: 50 });
   const [editDate, setEditDate] = useState("");
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isCoverMenuOpen, setIsCoverMenuOpen] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const handleDiscard = () => {
+    if (activeNoteId) deleteNote(activeNoteId);
+    setActiveNoteId(null);
+    setSaveError(null);
+  };
+
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -109,6 +156,8 @@ export default function NotebookPage() {
     setEditCategory(note.category || "Educational");
     setEditImages(note.images || []);
     setEditCoverImage(note.coverImage);
+    setEditCoverPosition(note.coverPosition ?? 50);
+    setIsRepositioning(false);
     try {
       setEditDate(format(parseISO(note.updatedAt), "yyyy-MM-dd'T'HH:mm"));
     } catch {
@@ -152,6 +201,7 @@ export default function NotebookPage() {
       category: editCategory,
       images: editImages,
       coverImage: editCoverImage,
+      coverPosition: editCoverPosition,
       updatedAt: isoDate,
       aiSummary: aiSummary || undefined
     });
@@ -190,6 +240,7 @@ export default function NotebookPage() {
       if (data.success && data.url) {
         if (isCover) {
           setEditCoverImage(data.url);
+            setEditCoverPosition(50);
         } else {
           setEditImages(prev => [...prev, data.url]);
         }
@@ -201,6 +252,7 @@ export default function NotebookPage() {
             content: editContent,
             category: editCategory,
             coverImage: isCover ? data.url : editCoverImage,
+              coverPosition: editCoverPosition,
             images: isCover ? editImages : [...editImages, data.url],
             aiSummary: aiSummary || undefined
           });
@@ -222,6 +274,7 @@ export default function NotebookPage() {
         content: editContent,
         category: editCategory,
         coverImage: editCoverImage,
+      coverPosition: editCoverPosition,
         images: updated,
         aiSummary: aiSummary || undefined
       });
@@ -342,6 +395,7 @@ My Journal Entry:
             category: editCategory,
             images: editImages,
             coverImage: editCoverImage,
+      coverPosition: editCoverPosition,
             updatedAt: new Date().toISOString(),
             aiSummary: text
           });
@@ -357,12 +411,23 @@ My Journal Entry:
   };
 
   const handleBack = () => {
-    // Auto-save one last time
-    handleSave();
-    
-    // If there's text but no AI summary yet, quietly generate it in the background
-    if (editContent.trim() && !aiSummary) {
-      generateSummary(activeNoteId || undefined); // Pass ID so it knows where to save if state unmounts
+    // Check if the note is completely empty or just the default placeholder
+    const isEmpty = (!editTitle.trim() || editTitle === "Untitled Note") && 
+                    !editContent.trim() && 
+                    editImages.length === 0 && 
+                    !editCoverImage;
+
+    if (isEmpty && activeNoteId) {
+      // Discard empty note (prevent pollution of database)
+      deleteNote(activeNoteId);
+    } else {
+      // Auto-save one last time
+      handleSave();
+      
+      // If there's text but no AI summary yet, quietly generate it in the background
+      if (editContent.trim() && !aiSummary) {
+        generateSummary(activeNoteId || undefined);
+      }
     }
     
     setActiveNoteId(null);
@@ -370,79 +435,172 @@ My Journal Entry:
 
   if (activeNoteId) {
     return (
-      <div className="max-w-[1200px] mx-auto min-h-[calc(100vh-120px)] flex flex-col bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden">
+      <div className="max-w-[1200px] mx-auto min-h-[calc(100vh-120px)] flex flex-col bg-[var(--card)] rounded-xl border border-[var(--border)] overflow-hidden animate-zoom-in shadow-2xl relative">
         {/* Cover Image Area */}
         <div 
-          className="h-48 w-full relative bg-[var(--card)] group flex items-center justify-center border-b border-[var(--border)]"
-          style={editCoverImage ? { backgroundImage: `url(${editCoverImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
-        >
+            className={`h-48 w-full relative bg-[var(--card)] flex items-center justify-center border-b border-[var(--border)] ${isRepositioning ? 'cursor-grab active:cursor-grabbing' : 'group'}`}
+            style={editCoverImage ? { backgroundImage: `url(${editCoverImage})`, backgroundSize: 'cover', backgroundPosition: `center ${editCoverPosition}%` } : {}}
+            onMouseDown={(e) => {
+              if (!isRepositioning) return;
+              dragRef.current = { isDragging: true, startY: e.clientY, startPos: editCoverPosition };
+            }}
+            onMouseMove={(e) => {
+              if (!isRepositioning || !dragRef.current.isDragging) return;
+              const deltaY = e.clientY - dragRef.current.startY;
+              let newPos = dragRef.current.startPos - (deltaY * 0.3); // Sensitivity
+              newPos = Math.max(0, Math.min(100, newPos));
+              setEditCoverPosition(newPos);
+            }}
+            onMouseUp={() => dragRef.current.isDragging = false}
+            onMouseLeave={() => dragRef.current.isDragging = false}
+          >
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
           
-          <button 
-            onClick={handleBack}
-            className="absolute top-6 left-6 z-10 flex items-center px-3 py-1.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md text-white/80 hover:text-white transition-all text-sm font-medium"
-          >
-            <ChevronLeft className="w-4 h-4 mr-1" /> Save & Close
-          </button>
+          
 
-          <div className="absolute top-6 right-6 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            {editCoverImage && (
-              <button onClick={removeCoverImage} className="px-3 py-1.5 bg-rose-500/80 hover:bg-rose-500 backdrop-blur-md rounded-md text-white text-xs font-medium">
-                Remove Cover
+          
+          {isRepositioning && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 pointer-events-none">
+              <span className="bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full font-bold shadow-2xl animate-zoom-in">Drag image to reposition</span>
+            </div>
+          )}
+          {isRepositioning ? (
+            <div className="absolute top-6 right-6 z-20 flex gap-2 animate-zoom-in">
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsRepositioning(false); dragRef.current.isDragging = false; }} 
+                className="px-4 py-2 bg-black/60 hover:bg-[var(--loss)] backdrop-blur-md rounded-lg text-white text-sm font-bold shadow-lg transition-all"
+              >
+                Cancel
               </button>
-            )}
-            <button onClick={() => coverInputRef.current?.click()} className="px-3 py-1.5 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-md text-white text-xs font-medium">
-              Change Cover
-            </button>
-            <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={e => handleFileUpload(e, true)} />
-          </div>
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsRepositioning(false); dragRef.current.isDragging = false; handleSave(); }} 
+                className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary)]/90 backdrop-blur-md rounded-lg text-white text-sm font-bold shadow-lg transition-all"
+              >
+                Save Position
+              </button>
+            </div>
+          ) : (
+            <div className="absolute top-6 right-6 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              {!editCoverImage ? (
+                <button onClick={() => coverInputRef.current?.click()} className="px-4 py-2 bg-black/60 hover:bg-black/80 backdrop-blur-md rounded-lg text-white text-sm font-bold shadow-lg transition-all">
+                  Insert Cover
+                </button>
+              ) : (
+                <div className="relative">
+                  <button onClick={() => setIsCoverMenuOpen(!isCoverMenuOpen)} className="flex items-center px-4 py-2 bg-black/60 hover:bg-black/80 backdrop-blur-md rounded-lg text-white text-sm font-bold shadow-lg transition-all">
+                    Edit Cover <ChevronDown className="w-4 h-4 ml-2" />
+                  </button>
+                  {isCoverMenuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-30" onClick={() => setIsCoverMenuOpen(false)}></div>
+                      <div className="absolute top-full right-0 mt-2 w-48 bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-2xl z-40 p-1 animate-zoom-in">
+                        <button onClick={() => { setIsCoverMenuOpen(false); coverInputRef.current?.click(); }} className="w-full text-left px-3 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--muted)] rounded-lg font-medium transition-colors">
+                          Replace
+                        </button>
+                        <button onClick={() => { setIsCoverMenuOpen(false); setIsRepositioning(true); }} className="w-full text-left px-3 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--muted)] rounded-lg font-medium transition-colors">
+                          Reposition
+                        </button>
+                        <button onClick={() => { setIsCoverMenuOpen(false); removeCoverImage(); }} className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-lg font-medium transition-colors">
+                          Remove
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={e => handleFileUpload(e, true)} />
+            </div>
+          )}
+
         </div>
 
         {/* Editor Area */}
-        <div className="p-12 flex-1 flex flex-col max-w-[900px] mx-auto w-full">
-          <input 
-            type="text"
-            value={editTitle}
-            onChange={e => setEditTitle(e.target.value)}
-            onBlur={handleSave}
-            placeholder="Untitled"
-            className="bg-transparent text-5xl font-bold text-white focus:outline-none placeholder:text-zinc-700 mb-6"
-          />
+          <div className="absolute top-[216px] right-8 flex items-center gap-3 z-10">
+              {saveError && (
+                <div className="px-4 py-2 bg-[var(--loss)] text-white text-sm font-bold rounded-lg animate-zoom-in shadow-lg">
+                  {saveError}
+                </div>
+              )}
+              <button 
+                onClick={handleDiscard}
+                className="flex items-center px-4 py-2 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-lg text-white/80 hover:text-white transition-all text-sm font-bold"
+              >
+                <Trash2 className="w-4 h-4 mr-2" /> Discard
+              </button>
+              <button 
+                onClick={handleBack}
+                className="flex items-center px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary)]/80 shadow-lg shadow-[var(--primary)]/20 backdrop-blur-md rounded-lg text-white transition-all text-sm font-bold"
+              >
+                <Save className="w-4 h-4 mr-2" /> Save & Close
+              </button>
+          </div>
+
+          <div className="p-12 flex-1 flex flex-col max-w-[900px] mx-auto w-full relative">
+            
+          
+
+          <div className="mb-6 pr-[350px]">
+            <input 
+              type="text"
+              value={editTitle}
+              onChange={e => setEditTitle(e.target.value)}
+              onBlur={handleSave}
+              placeholder="Untitled"
+              className="bg-transparent text-5xl font-bold text-[var(--foreground)] focus:outline-none placeholder:text-[var(--muted-foreground)] w-full"
+            />
+          </div>
           
           <div className="flex items-center gap-4 mb-10 pb-6 border-b border-[var(--border)]/50">
-            <select 
-              value={editCategory} 
-              onChange={(e) => { setEditCategory(e.target.value); setTimeout(handleSave, 0); }}
-              className="bg-[var(--card)] border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]"
-            >
-              {CATEGORIES.map(c => (
-                <option key={c.name} value={c.name}>{c.name}</option>
-              ))}
-            </select>
-            <div className="flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-[var(--muted-foreground)]" />
-              <input 
-                type="datetime-local"
-                value={editDate}
-                onChange={(e) => { setEditDate(e.target.value); setTimeout(handleSave, 0); }}
-                className="bg-[var(--card)] border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)]"
-              />
+            <div className="relative">
+              <button 
+                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                className="bg-[var(--card)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm font-medium text-[var(--foreground)] flex items-center justify-between w-40 hover:border-[var(--primary)] transition-colors shadow-sm"
+              >
+                {editCategory}
+                <ChevronDown className="w-4 h-4 text-[var(--muted-foreground)]" />
+              </button>
+              
+              {isCategoryOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsCategoryOpen(false)}></div>
+                    <div className="absolute top-full left-0 mt-2 w-56 bg-[var(--card)]/90 backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-2xl z-50 p-2 animate-zoom-in">
+                      <div className="px-3 py-2 text-[10px] font-bold text-[var(--muted-foreground)] tracking-wider uppercase">
+                        Select Category
+                      </div>
+                      <div className="h-px bg-[var(--border)] mx-3 mb-2 opacity-50"></div>
+                      {CATEGORIES.map(c => (
+                        <div 
+                          key={c.name}
+                          onClick={() => { setEditCategory(c.name); setIsCategoryOpen(false); setTimeout(handleSave, 0); }}
+                          className={`px-3 py-2.5 mx-1 mb-1 rounded-xl cursor-pointer text-sm font-medium transition-all flex items-center justify-between ${editCategory === c.name ? 'bg-[var(--primary)] text-[var(--primary-foreground)] shadow-md' : 'text-[var(--foreground)] hover:bg-[var(--muted)]/80'}`}
+                        >
+                          <span>{c.name}</span>
+                          {editCategory === c.name && <Check className="w-4 h-4" />}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
             </div>
-            <button 
-              onClick={() => fileInputRef.current?.click()}
-              className="ml-auto flex items-center px-3 py-1.5 bg-[var(--muted)] hover:bg-zinc-700 rounded-md text-[var(--foreground)] text-sm transition-colors"
-            >
-              <ImageIcon className="w-4 h-4 mr-2" /> Attach Image
-            </button>
-            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={e => handleFileUpload(e, false)} />
-          </div>
+            <div className="flex items-center gap-2">
+                <DatePickerDropdown date={editDate} onChange={d => { setEditDate(d); setTimeout(handleSave, 0); }} />
+              </div>
+                          <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="ml-auto flex items-center px-3 py-1.5 bg-[var(--muted)] hover:bg-[var(--border)] rounded-md text-[var(--foreground)] text-sm transition-colors"
+              >
+                <ImageIcon className="w-4 h-4 mr-2" /> Attach Image
+              </button>
+              <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={e => handleFileUpload(e, false)} />
+              
+              </div>
 
           <textarea 
             value={editContent}
             onChange={e => setEditContent(e.target.value)}
             onBlur={handleSave}
             placeholder="Write your thoughts here..."
-            className="flex-1 w-full bg-transparent text-lg text-[var(--foreground)] focus:outline-none resize-none leading-relaxed placeholder:text-zinc-700 min-h-[300px]"
+            className="flex-1 w-full bg-transparent text-lg text-[var(--foreground)] focus:outline-none resize-none leading-relaxed placeholder:text-[var(--muted-foreground)] min-h-[300px]"
           />
 
           <div className="mt-8 pt-8 border-t border-[var(--border)]/50">
@@ -463,16 +621,16 @@ My Journal Entry:
             </div>
 
             {aiSummary && (
-              <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-[var(--primary)]/20 p-6 rounded-xl relative overflow-hidden">
-                <div className="relative z-10 prose prose-invert prose-purple max-w-none text-sm leading-relaxed">
+              <div className="bg-[var(--primary)]/10 border border-[var(--primary)]/30 p-6 rounded-3xl relative overflow-hidden">
+                <div className="relative z-10 prose dark:prose-invert prose-headings:text-[var(--foreground)] prose-p:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[var(--foreground)] max-w-none text-sm leading-relaxed">
                   <ReactMarkdown>{aiSummary}</ReactMarkdown>
                 </div>
               </div>
             )}
             
             {aiError && (
-              <div className="bg-rose-900/20 border border-rose-500/20 p-6 rounded-xl relative overflow-hidden mt-4">
-                <div className="relative z-10 text-sm leading-relaxed text-rose-200">
+              <div className="bg-[var(--loss)]/20 border border-[var(--loss)]/30 p-6 rounded-xl relative overflow-hidden mt-4">
+                <div className="relative z-10 text-sm leading-relaxed text-[var(--loss)]">
                   <ReactMarkdown>{aiError}</ReactMarkdown>
                 </div>
               </div>
@@ -488,7 +646,7 @@ My Journal Entry:
                     <img src={url} alt="Attached" className="w-full h-auto object-cover" />
                     <button 
                       onClick={() => removeImage(idx)}
-                      className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-rose-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all backdrop-blur-md"
+                      className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-[var(--loss)] text-white rounded-full opacity-0 group-hover:opacity-100 transition-all backdrop-blur-md"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -506,7 +664,7 @@ My Journal Entry:
     <div className="max-w-[1400px] mx-auto space-y-12">
       {/* Header */}
       <div className="flex flex-col gap-3 max-w-4xl">
-        <h2 className="text-3xl font-bold text-white tracking-tight flex items-center">
+        <h2 className="text-3xl font-bold text-[var(--foreground)] tracking-tight flex items-center">
           <Sparkles className="w-6 h-6 mr-3 text-[var(--primary)] flex-shrink-0" />
           {motivationalQuote?.topic || "Daily Inspiration"}
         </h2>
@@ -525,87 +683,81 @@ My Journal Entry:
           <div 
             key={cat.name}
             onClick={() => setActiveCategory(cat.name)}
-            className={`relative h-40 rounded-2xl p-6 cursor-pointer overflow-hidden group transition-all duration-300 border hover:-translate-y-1 hover:shadow-2xl ${cat.shadow} ${
-              activeCategory === cat.name ? cat.border : 'border-[var(--border)]/50 hover:border-zinc-600'
+            className={`relative h-40 rounded-3xl p-6 cursor-pointer overflow-hidden group transition-all duration-300 border hover:-translate-y-1 ${cat.glow} ${
+              activeCategory === cat.name ? `${cat.borderActive} ${cat.bgActive}` : `border-[var(--border)] bg-[var(--card)] ${cat.hoverBorder}`
             }`}
           >
-            <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-20 group-hover:opacity-40 transition-opacity`}></div>
             <div className="relative h-full flex flex-col justify-end">
-              <h3 className="text-2xl font-bold text-white tracking-tight">{cat.name}</h3>
-              <p className={`text-sm mt-1 font-medium ${cat.text}`}>{notes.filter(n => (n.category || "Daily") === cat.name).length} notes</p>
+              <h3 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">{cat.name}</h3>
+              <p className={`text-sm mt-1 font-medium ${activeCategory === cat.name ? cat.textActive : 'text-[var(--muted-foreground)]'}`}>
+                {notes.filter(n => (n.category || "Educational") === cat.name).length} notes
+              </p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Overview Table */}
-      <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-2xl shadow-black/20">
-        <div className="px-8 py-5 border-b border-[var(--border)] bg-[var(--card)]/30 flex justify-between items-center">
+      <div className="bg-[var(--card)] rounded-3xl border border-[var(--border)] shadow-xl shadow-black/5 pb-4">
+        <div className="px-8 py-5 border-b border-[var(--border)] bg-[var(--card)]/30 flex justify-between items-center rounded-t-3xl">
           <div className="flex items-center space-x-2">
             <LayoutGrid className="w-5 h-5 text-[var(--muted-foreground)]" />
-            <h3 className="text-lg font-semibold text-white">Overview: {activeCategory}</h3>
+            <h3 className="text-lg font-semibold text-[var(--foreground)]">Overview: {activeCategory}</h3>
           </div>
           <button 
             onClick={handleCreateNote}
-            className="flex items-center px-4 py-2 bg-white text-black hover:bg-zinc-200 rounded-md text-sm font-semibold transition-colors"
+            className="flex items-center px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary)]/90 rounded-xl text-sm font-semibold transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Note
           </button>
         </div>
         
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="text-xs text-[var(--muted-foreground)] uppercase bg-[var(--card)]/20">
-              <tr>
-                <th className="px-8 py-4 font-semibold w-1/2">Name</th>
-                <th className="px-8 py-4 font-semibold">Date</th>
-                <th className="px-8 py-4 font-semibold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-800/30">
+        <div className="">
+            <div className="flex px-10 py-4 text-xs text-[var(--muted-foreground)] uppercase bg-[var(--card)]/20 border-b border-[var(--border)] mb-2">
+              <div className="w-1/2 font-semibold">Name</div>
+              <div className="w-1/4 font-semibold">Date</div>
+              <div className="w-1/4 font-semibold text-right">Actions</div>
+            </div>
+            
+            <div className="space-y-2 px-4">
               {filteredNotes.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="px-8 py-12 text-center text-[var(--muted-foreground)]">
-                    <FileText className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                    <p>No notes in {activeCategory}.</p>
-                  </td>
-                </tr>
+                <div className="py-12 text-center text-[var(--muted-foreground)]">
+                  <FileText className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                  <p>No notes in {activeCategory}.</p>
+                </div>
               ) : (
                 filteredNotes.map(note => (
-                  <tr 
+                  <div 
                     key={note.id} 
                     onClick={() => handleSelectNote(note)}
-                    className="hover:bg-[var(--muted)]/20 transition-colors cursor-pointer group"
+                    className={`animate-slide-up flex items-center px-6 py-4 rounded-2xl transition-all duration-300 cursor-pointer group ${CATEGORIES.find(c => c.name === activeCategory)?.tableRowGlow || ''}`}
                   >
-                    <td className="px-8 py-4">
-                      <div className="flex items-center">
-                        <FileText className="w-4 h-4 mr-3 text-[var(--muted-foreground)] group-hover:text-white transition-colors" />
-                        <span className="font-medium text-zinc-200 group-hover:text-white transition-colors">{note.title}</span>
-                      </div>
-                    </td>
-                    <td className="px-8 py-4 text-sm text-[var(--muted-foreground)]">
+                    <div className="w-1/2 flex items-center">
+                      <FileText className="w-4 h-4 mr-3 text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] transition-colors" />
+                      <span className="font-medium text-[var(--foreground)] group-hover:text-[var(--foreground)] transition-colors">{note.title}</span>
+                    </div>
+                    <div className="w-1/4 text-sm text-[var(--muted-foreground)]">
                       {format(parseISO(note.updatedAt), 'MMMM d, yyyy')}
-                    </td>
-                    <td className="px-8 py-4 text-right">
+                    </div>
+                    <div className="w-1/4 flex justify-end">
                       <button 
                         onClick={(e) => handleDelete(note.id, e)}
-                        className="p-2 text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-all opacity-0 group-hover:opacity-100"
+                        className="p-2 text-[var(--muted-foreground)] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          </div>
       </div>
 
       {/* Monthly Calendar */}
       <div>
-        <h3 className="text-xl font-bold text-white tracking-tight mb-6 mt-12">Calendar</h3>
+        <h3 className="text-xl font-bold text-[var(--foreground)] tracking-tight mb-6 mt-12">Calendar</h3>
         <NotesCalendar notes={notes} onNoteClick={handleSelectNote} />
       </div>
     </div>

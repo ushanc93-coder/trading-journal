@@ -97,11 +97,11 @@ export function ImageViewerModal({ src, onClose }: ImageViewerModalProps) {
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-[var(--card)]/90 backdrop-blur-xl border border-[var(--border)] p-2 rounded-2xl z-10 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={() => setScale(s => Math.max(0.1, s - 0.25))} className="p-2 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-white rounded-xl transition-colors"><ZoomOut className="w-5 h-5"/></button>
-        <span className="text-white text-sm font-medium w-16 text-center">{Math.round(scale * 100)}%</span>
-        <button onClick={() => setScale(s => Math.min(15, s + 0.25))} className="p-2 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-white rounded-xl transition-colors"><ZoomIn className="w-5 h-5"/></button>
+        <button onClick={() => setScale(s => Math.max(0.1, s - 0.25))} className="p-2 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)] rounded-xl transition-colors"><ZoomOut className="w-5 h-5"/></button>
+        <span className="text-[var(--foreground)] text-sm font-medium w-16 text-center">{Math.round(scale * 100)}%</span>
+        <button onClick={() => setScale(s => Math.min(15, s + 0.25))} className="p-2 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)] rounded-xl transition-colors"><ZoomIn className="w-5 h-5"/></button>
         <div className="w-px h-5 bg-[var(--muted)] mx-1"></div>
-        <button onClick={handleReset} className="p-2 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-white rounded-xl transition-colors" title="Reset View"><Maximize className="w-5 h-5"/></button>
+        <button onClick={handleReset} className="p-2 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)] rounded-xl transition-colors" title="Reset View"><Maximize className="w-5 h-5"/></button>
       </div>
 
       <button 

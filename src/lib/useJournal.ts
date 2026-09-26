@@ -6,6 +6,7 @@ import { useSettingsContext } from "./SettingsContext";
 
 export interface ProcessEntry {
   id: string;
+  ticket?: string;
   date: string;
   pair: string;
   session: string;
@@ -136,16 +137,16 @@ export function useJournal() {
   const seedMockJournal = () => {
     if (!activeAccountId) return;
     const mockJournal: ProcessEntry[] = [
-      { id: "j1", date: "2026-09-01", pair: "EURUSD", session: "London", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Win", outcome: "Followed the plan perfectly." },
-      { id: "j2", date: "2026-09-02", pair: "GBPUSD", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Loss", outcome: "Setup was A+, just got stopped out normally." },
-      { id: "j3", date: "2026-09-03", pair: "XAUUSD", session: "London", entryRules: true, max2Trades: true, maxRisk: false, maxTp: true, maxProfit: false, result: "Bad Win", outcome: "Position sized way too big out of greed. Got lucky it hit TP." },
-      { id: "j4", date: "2026-09-04", pair: "US30", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: false, maxProfit: true, result: "Bad Win", outcome: "Got scared of a pullback and closed before 2R." },
-      { id: "j5", date: "2026-09-05", pair: "USDJPY", session: "Asian", entryRules: false, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Bad Loss", outcome: "Traded out of boredom during Asian session." },
-      { id: "j6", date: "2026-09-08", pair: "USDCAD", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Win", outcome: "Clean breakout and hit target exactly." },
-      { id: "j7", date: "2026-09-09", pair: "EURGBP", session: "London", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Win", outcome: "Great setup." },
-      { id: "j8", date: "2026-09-09", pair: "US100", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Win", outcome: "Moved stop to BE manually." },
-      { id: "j9", date: "2026-09-09", pair: "GER40", session: "New York", entryRules: true, max2Trades: false, maxRisk: true, maxTp: true, maxProfit: true, result: "Bad Loss", outcome: "Over-traded. This was my 3rd trade today." },
-      { id: "j10", date: "2026-09-10", pair: "XAGUSD", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: false, maxProfit: true, result: "Bad Win", outcome: "Moved my TP further than my plan allowed to try and get 3R." }
+      { id: "j1", ticket: "TKT-001", date: "2026-09-01", pair: "EURUSD", session: "London", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Win", outcome: "Followed the plan perfectly." },
+      { id: "j2", ticket: "TKT-002", date: "2026-09-02", pair: "GBPUSD", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Loss", outcome: "Setup was A+, just got stopped out normally." },
+      { id: "j3", ticket: "TKT-003", date: "2026-09-03", pair: "XAUUSD", session: "London", entryRules: true, max2Trades: true, maxRisk: false, maxTp: true, maxProfit: false, result: "Bad Win", outcome: "Position sized way too big out of greed. Got lucky it hit TP." },
+      { id: "j4", ticket: "TKT-004", date: "2026-09-04", pair: "US30", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: false, maxProfit: true, result: "Bad Win", outcome: "Got scared of a pullback and closed before 2R." },
+      { id: "j5", ticket: "TKT-005", date: "2026-09-05", pair: "USDJPY", session: "Asian", entryRules: false, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Bad Loss", outcome: "Traded out of boredom during Asian session." },
+      { id: "j6", ticket: "TKT-006", date: "2026-09-08", pair: "USDCAD", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Win", outcome: "Clean breakout and hit target exactly." },
+      { id: "j7", ticket: "TKT-007", date: "2026-09-09", pair: "EURGBP", session: "London", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Win", outcome: "Great setup." },
+      { id: "j8", ticket: "TKT-008", date: "2026-09-09", pair: "US100", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: true, maxProfit: true, result: "Good Win", outcome: "Moved stop to BE manually." },
+      { id: "j9", ticket: "TKT-009", date: "2026-09-09", pair: "GER40", session: "New York", entryRules: true, max2Trades: false, maxRisk: true, maxTp: true, maxProfit: true, result: "Bad Loss", outcome: "Over-traded. This was my 3rd trade today." },
+      { id: "j10", ticket: "TKT-010", date: "2026-09-10", pair: "XAGUSD", session: "New York", entryRules: true, max2Trades: true, maxRisk: true, maxTp: false, maxProfit: true, result: "Bad Win", outcome: "Moved my TP further than my plan allowed to try and get 3R." }
     ];
     setEntries(mockJournal);
     localStorage.setItem(`process_journal_${activeAccountId}`, JSON.stringify(mockJournal));

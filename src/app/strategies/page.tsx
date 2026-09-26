@@ -9,6 +9,25 @@ import {
 import { Briefcase, Sparkles, Wand2, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const value = payload[0].value;
+    const isLoss = value < 0;
+    // Format value based on what we're displaying (PnL vs %)
+    const formattedValue = payload[0].name === 'winRate' ? `${value}%` : `${isLoss ? '-' : ''}$${Math.abs(value).toFixed(2)}`;
+    return (
+      <div className="bg-[var(--card)]/80 backdrop-blur-md border border-[var(--border)] p-4 rounded-xl shadow-xl">
+        <p className="text-[var(--muted-foreground)] font-medium text-sm mb-1">{label}</p>
+        <p className={`text-lg font-bold ${isLoss ? 'text-[var(--loss)]' : 'text-[var(--profit)]'}`}>
+          {formattedValue}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function StrategiesPage() {
   const { trades, isLoaded } = useTradesContext();
   const { preferences } = useSettingsContext();
@@ -49,42 +68,38 @@ export default function StrategiesPage() {
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto">
       <div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">Strategies Playbook</h2>
+        <h2 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">Strategies Playbook</h2>
         <p className="text-[var(--muted-foreground)] mt-1">Identify which trading setups actually generate your profits.</p>
       </div>
 
-      {bestStrategy && (
-        <div className="bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-[var(--primary)]/30 rounded-xl p-6 flex items-center">
-          <div className="bg-[var(--primary)]/20 p-4 rounded-full mr-6">
-            <Briefcase className="w-8 h-8 text-[var(--primary)]" />
+              {bestStrategy && (
+          <div className="bg-[var(--primary)] rounded-2xl p-6 flex items-center shadow-lg shadow-[var(--primary)]/20">
+            <div className="bg-[var(--primary-foreground)]/20 p-4 rounded-full mr-6">
+              <Briefcase className="w-8 h-8 text-[var(--primary-foreground)]" />
+            </div>
+            <div className="text-[var(--primary-foreground)]">
+              <h3 className="text-sm font-medium text-[var(--primary-foreground)]/80 uppercase tracking-wider mb-1">Most Profitable Setup</h3>
+              <div className="text-2xl font-bold">{bestStrategy.name}</div>
+              <p className="text-sm text-[var(--primary-foreground)]/90 mt-1">
+                Generated <span className="font-bold">${bestStrategy.pnl.toLocaleString()}</span> with a {bestStrategy.winRate}% win rate across {bestStrategy.total} trades.
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-medium text-purple-300 uppercase tracking-wider mb-1">Most Profitable Setup</h3>
-            <div className="text-2xl font-bold text-white">{bestStrategy.name}</div>
-            <p className="text-sm text-[var(--muted-foreground)] mt-1">
-              Generated <span className="text-[var(--win)] font-bold">${bestStrategy.pnl.toLocaleString()}</span> with a {bestStrategy.winRate}% win rate across {bestStrategy.total} trades.
-            </p>
-          </div>
-        </div>
-      )}
+        )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Net P&L by Strategy */}
         <div className="bg-[var(--card)] p-6 rounded-xl border border-[var(--border)]">
-          <h3 className="text-lg font-bold text-white mb-6">Net P&L by Strategy</h3>
+          <h3 className="text-lg font-bold text-[var(--foreground)] mb-6">Net P&L by Strategy</h3>
           <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={strategyData} layout="vertical" margin={{ top: 0, right: 0, left: 20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" horizontal={false} />
-                <XAxis type="number" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
-                <YAxis dataKey="name" type="category" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} width={100} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '4px' }}
-                  itemStyle={{ color: '#fafafa' }}
-                  cursor={{ fill: '#27272a', opacity: 0.4 }}
-                />
-                <Bar dataKey="pnl" radius={[0, 4, 4, 0]}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                <XAxis type="number" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
+                <YAxis dataKey="name" type="category" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} width={100} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "var(--muted)", opacity: 0.2 }} />
+                <Bar dataKey="pnl" radius={[0, 6, 6, 0]}>
                   {strategyData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.pnl >= 0 ? '#10b981' : '#ef4444'} />
                   ))}
@@ -96,19 +111,15 @@ export default function StrategiesPage() {
 
         {/* Win Rate by Strategy */}
         <div className="bg-[var(--card)] p-6 rounded-xl border border-[var(--border)]">
-          <h3 className="text-lg font-bold text-white mb-6">Win Rate by Strategy</h3>
+          <h3 className="text-lg font-bold text-[var(--foreground)] mb-6">Win Rate by Strategy</h3>
           <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={strategyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                <XAxis dataKey="name" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '4px' }}
-                  itemStyle={{ color: '#fafafa' }}
-                  cursor={{ fill: '#27272a', opacity: 0.4 }}
-                />
-                <Bar dataKey="winRate" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "var(--muted)", opacity: 0.2 }} />
+                <Bar dataKey="winRate" fill="#3b82f6" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -129,14 +140,14 @@ export default function StrategiesPage() {
                 <th className="px-6 py-4 font-semibold text-right">Net P&L</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/50">
+            <tbody className="divide-y divide-[var(--border)]">
               {strategyData.map((strat) => (
                 <tr key={strat.name} className="hover:bg-[var(--muted)]/30 transition-colors">
-                  <td className="px-6 py-4 font-bold text-white">{strat.name}</td>
+                  <td className="px-6 py-4 font-bold text-[var(--foreground)]">{strat.name}</td>
                   <td className="px-6 py-4 text-center text-[var(--muted-foreground)]">{strat.total}</td>
                   <td className="px-6 py-4 text-center">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                      strat.winRate >= 50 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+                      strat.winRate >= 50 ? 'bg-[var(--win)]/20 text-[var(--win)]' : 'bg-[var(--loss)]/20 text-[var(--loss)]'
                     }`}>
                       {strat.winRate}%
                     </span>
@@ -162,7 +173,7 @@ export default function StrategiesPage() {
           <Wand2 className="w-32 h-32 text-[var(--primary)]" />
         </div>
         <div className="relative z-10 max-w-4xl">
-          <h3 className="text-xl font-bold text-white mb-2 flex items-center">
+          <h3 className="text-xl font-bold text-[var(--foreground)] mb-2 flex items-center">
             <Sparkles className="w-5 h-5 mr-2 text-[var(--primary)]" /> AI Strategy Refiner
           </h3>
           <p className="text-[var(--muted-foreground)] mb-6 text-sm">
@@ -171,7 +182,7 @@ export default function StrategiesPage() {
 
           <div className="space-y-4">
             <textarea
-              className="w-full bg-[var(--card)]/50 border border-[var(--border)] rounded-xl p-4 text-white text-sm focus:outline-none focus:border-[var(--primary)] transition-colors resize-none h-32 placeholder-zinc-600"
+              className="w-full bg-[var(--card)]/50 border border-[var(--border)] rounded-xl p-4 text-[var(--foreground)] text-sm focus:outline-none focus:border-[var(--primary)] transition-colors resize-none h-32 placeholder-zinc-600"
               placeholder="e.g. I want to trade gold when london opens if it sweeps asia high and breaks structure down on 5m, targeting the asia low..."
               value={roughIdea}
               onChange={(e) => setRoughIdea(e.target.value)}
