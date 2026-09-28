@@ -335,10 +335,10 @@ export default function AddTradeModal({ isOpen, onClose, onAddTrade, onEditTrade
                     contents: [{
                       parts: [
                         { text: "Extract trading details from this screenshot (TradingView, MT4, etc.). Return a JSON object with these keys: symbol (string, e.g. XAUUSD), direction ('Long' or 'Short'), entryPrice (number), exitPrice (number or null), sl (number), tp (number), lotSize (number, look for 'Qty' or 'Volume'), netPnL (number or null), date (string 'YYYY-MM-DD', infer from bottom axis/time), and patterns (array of strings, identify any classic chart patterns like 'Order Block', 'FVG', 'Head & Shoulders', 'Break & Retest', 'Double Top', 'Liquidity Sweep' etc. visible in the chart). If a value is missing, use null (or empty array for patterns)." },
-                        { inline_data: { mime_type: file.type, data: base64Data } }
+                        { inlineData: { mimeType: file.type, data: base64Data } }
                       ]
                     }],
-                    generationConfig: { response_mime_type: "application/json" }
+                    generationConfig: { response_mimeType: "application/json" }
                   })
                 });
                 
@@ -359,7 +359,7 @@ export default function AddTradeModal({ isOpen, onClose, onAddTrade, onEditTrade
                 if (aiRes.status === 429 || errMsg.toLowerCase().includes("quota") || errMsg.toLowerCase().includes("exceeded")) {
                   setAiError("AI Analysis is currently busy due to high demand. Please try again in a few moments.");
                 } else {
-                  setAiError("AI Vision failed: Please verify your API key and network connection.");
+                  setAiError("AI Vision failed: " + (errMsg || "Please verify your API key."));
                 }
                 setIsScanning(false);
                 return;
