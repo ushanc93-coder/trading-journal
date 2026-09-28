@@ -1,9 +1,23 @@
 const https = require('https');
 
-const apiKey = process.env.GEMINI_API_KEY || "dummy"; // just checking if model exists, API key doesn't matter for 404
-const req = https.request(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest?key=${apiKey}`, { method: 'GET' }, (res) => {
+const apiKey = "dummy"; 
+const payload = JSON.stringify({
+  contents: [{
+    parts: [
+      { text: "test" }
+    ]
+  }]
+});
+
+const req = https.request(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, { 
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+}, (res) => {
   let data = '';
   res.on('data', chunk => data += chunk);
   res.on('end', () => console.log('Status:', res.statusCode, 'Data:', data));
 });
+req.write(payload);
 req.end();

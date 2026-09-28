@@ -328,7 +328,7 @@ export default function AddTradeModal({ isOpen, onClose, onAddTrade, onEditTrade
               let aiRes: any;
               let retries = 3;
               while (retries > 0) {
-                aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
@@ -358,8 +358,10 @@ export default function AddTradeModal({ isOpen, onClose, onAddTrade, onEditTrade
                 let errMsg = aiData.error?.message || "";
                 if (aiRes.status === 429 || errMsg.toLowerCase().includes("quota") || errMsg.toLowerCase().includes("exceeded")) {
                   setAiError("AI Analysis is currently busy due to high demand. Please try again in a few moments.");
+                } else if (aiRes.status === 400 || aiRes.status === 403 || aiRes.status === 404) {
+                  setAiError("AI Vision failed: Please verify your Gemini API key in Settings. Make sure you generated it from Google AI Studio.");
                 } else {
-                  setAiError("AI Vision failed: " + (errMsg || "Please verify your API key."));
+                  setAiError("AI Vision failed: Unable to process the image at this time. Please try again.");
                 }
                 setIsScanning(false);
                 return;
