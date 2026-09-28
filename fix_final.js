@@ -1,4 +1,6 @@
+const fs = require('fs');
 
+const code = `
 "use client";
 
 import { useSettingsContext, Account } from "@/lib/SettingsContext";
@@ -72,7 +74,7 @@ export default function SettingsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `uc-trade-journal-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = \`uc-trade-journal-backup-\${new Date().toISOString().split('T')[0]}.json\`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -130,9 +132,9 @@ export default function SettingsPage() {
     }
 
     if (modalMode === "add") {
-      addAccount({ name: accName.trim(), balance: Number(accBalance) });
+      addAccount(accName.trim(), Number(accBalance));
     } else if (modalMode === "edit" && editingAccountId) {
-      updateAccount(editingAccountId, { name: accName.trim(), balance: Number(accBalance) });
+      updateAccount(editingAccountId, accName.trim(), Number(accBalance));
     }
     
     setIsAccountModalOpen(false);
@@ -167,13 +169,13 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left font-medium text-sm ${
+                  className={\`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left font-medium text-sm \${
                     isActive 
                       ? 'bg-[var(--primary)]/10 text-[var(--primary)] font-bold' 
                       : 'text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 hover:text-[var(--foreground)]'
-                  }`}
+                  }\`}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}`} />
+                  <Icon className={\`w-5 h-5 \${isActive ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}\`} />
                   {tab.label}
                 </button>
               );
@@ -266,17 +268,17 @@ export default function SettingsPage() {
                   <div className="grid grid-cols-2 gap-4 max-w-sm">
                     <button 
                       onClick={() => updatePreferences({ theme: 'dark' })}
-                      className={`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all ${preferences.theme === 'dark' ? 'border-[var(--primary)] bg-[var(--primary)]/5' : 'border-[var(--border)] hover:border-[var(--muted-foreground)]/50'}`}
+                      className={\`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all \${preferences.theme === 'dark' ? 'border-[var(--primary)] bg-[var(--primary)]/5' : 'border-[var(--border)] hover:border-[var(--muted-foreground)]/50'}\`}
                     >
-                      <Moon className={`w-8 h-8 mb-3 ${preferences.theme === 'dark' ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}`} />
-                      <span className={`font-medium ${preferences.theme === 'dark' ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`}>Dark Theme</span>
+                      <Moon className={\`w-8 h-8 mb-3 \${preferences.theme === 'dark' ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}\`} />
+                      <span className={\`font-medium \${preferences.theme === 'dark' ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}\`}>Dark Theme</span>
                     </button>
                     <button 
                       onClick={() => updatePreferences({ theme: 'light' })}
-                      className={`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all ${preferences.theme === 'light' ? 'border-[var(--primary)] bg-[var(--primary)]/5' : 'border-[var(--border)] hover:border-[var(--muted-foreground)]/50'}`}
+                      className={\`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all \${preferences.theme === 'light' ? 'border-[var(--primary)] bg-[var(--primary)]/5' : 'border-[var(--border)] hover:border-[var(--muted-foreground)]/50'}\`}
                     >
-                      <Sun className={`w-8 h-8 mb-3 ${preferences.theme === 'light' ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}`} />
-                      <span className={`font-medium ${preferences.theme === 'light' ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`}>Light Theme</span>
+                      <Sun className={\`w-8 h-8 mb-3 \${preferences.theme === 'light' ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}\`} />
+                      <span className={\`font-medium \${preferences.theme === 'light' ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}\`}>Light Theme</span>
                     </button>
                   </div>
                 </div>
@@ -486,18 +488,18 @@ export default function SettingsPage() {
                               return;
                             }
                             const ok = await confirm({
-                              message: `Are you sure you want to delete ${acc.name}?`,
+                              message: \`Are you sure you want to delete \${acc.name}?\`,
                               danger: true
                             });
                             if (ok) {
                               deleteAccount(acc.id);
                             }
                           }}
-                          className={`p-2.5 rounded-lg transition-all border shadow-sm ${
+                          className={\`p-2.5 rounded-lg transition-all border shadow-sm \${
                             accounts.length === 1 
                               ? 'border-[var(--border)] text-[var(--muted-foreground)] bg-[var(--background)] cursor-not-allowed opacity-50' 
                               : 'border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--loss)] bg-[var(--background)] hover:bg-[var(--loss)]/10 hover:border-[var(--loss)]/30'
-                          }`}
+                          }\`}
                           title="Delete Account"
                           disabled={accounts.length === 1}
                         >
@@ -538,7 +540,7 @@ export default function SettingsPage() {
                     if (errors.accName) setErrors({ ...errors, accName: false });
                   }}
                   placeholder="e.g. Prop Firm Phase 1"
-                  className={`w-full bg-[var(--background)] border rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all ${errors.accName ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}`}
+                  className={\`w-full bg-[var(--background)] border rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all \${errors.accName ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}\`}
                   autoFocus
                 />
                 {errors.accName && <p className="text-xs text-[var(--loss)] mt-2 font-medium flex items-center gap-1"><Info className="w-3 h-3"/> Account name is required</p>}
@@ -555,7 +557,7 @@ export default function SettingsPage() {
                       if (errors.accBalance) setErrors({ ...errors, accBalance: false });
                     }}
                     placeholder="10000"
-                    className={`w-full bg-[var(--background)] border rounded-xl pl-9 pr-4 py-3 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all ${errors.accBalance ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}`}
+                    className={\`w-full bg-[var(--background)] border rounded-xl pl-9 pr-4 py-3 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all \${errors.accBalance ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}\`}
                   />
                 </div>
                 {errors.accBalance && <p className="text-xs text-[var(--loss)] mt-2 font-medium flex items-center gap-1"><Info className="w-3 h-3"/> Valid balance is required</p>}
@@ -582,3 +584,7 @@ export default function SettingsPage() {
     </div>
   );
 }
+`
+
+fs.writeFileSync('src/app/settings/page.tsx', code);
+console.log("Reconstructed exact logic with new UI");

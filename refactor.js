@@ -1,11 +1,12 @@
+const fs = require('fs');
 
+const code = `
 "use client";
 
-import { useSettingsContext, Account } from "@/lib/SettingsContext";
-import { useTrades } from "@/lib/useTrades";
-import { useJournal } from "@/lib/useJournal";
-import { useNotebook } from "@/lib/useNotebook";
+import { useSettingsContext } from "@/lib/SettingsContext";
+import { useTradesContext } from "@/lib/TradesContext";
 import { useConfirm } from "@/lib/ConfirmContext";
+import { useAlert } from "@/lib/AlertContext";
 import { useState, useRef, useEffect } from "react";
 import { 
   User, Moon, Sun, Download, Upload, Database, 
@@ -14,21 +15,20 @@ import {
 } from "lucide-react";
 
 export default function SettingsPage() {
-  const { accounts, activeAccountId, preferences, addAccount, updateAccount, deleteAccount, updatePreferences, isLoaded: settingsLoaded } = useSettingsContext();
-  const { seedMockData, clearAllTrades } = useTrades();
-  const { seedMockJournal, clearAllEntries } = useJournal();
-  const { seedMockNotebook, clearAllNotes } = useNotebook();
-  const { confirm, alert } = useConfirm();
+  const { preferences, updatePreferences } = useSettingsContext();
+  const { accounts, activeAccountId, addAccount, updateAccount, deleteAccount, clearAllTrades, clearAllEntries, clearAllNotes, seedDemoData } = useTradesContext();
+  const confirm = useConfirm();
+  const alert = useAlert();
 
   const [activeTab, setActiveTab] = useState('profile');
 
   // Profile State
-  const [displayName, setDisplayName] = useState("");
+  const [displayName, setDisplayName] = useState(preferences.displayName);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
   // API Key State
-  const [geminiKey, setGeminiKey] = useState("");
+  const [geminiKey, setGeminiKey] = useState(preferences.geminiApiKey || "");
 
   // Accounts Modal State
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
@@ -36,22 +36,18 @@ export default function SettingsPage() {
   const [editingAccountId, setEditingAccountId] = useState<string | null>(null);
   const [accName, setAccName] = useState("");
   const [accBalance, setAccBalance] = useState("");
-  const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState({ accName: false, accBalance: false });
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Sync state on mount
   useEffect(() => {
-    if (settingsLoaded) {
-      setDisplayName(preferences.name || "Trader");
-      setGeminiKey(preferences.geminiApiKey || "");
-    }
-  }, [preferences, settingsLoaded]);
-
-  if (!settingsLoaded) return <div className="p-8 text-[var(--muted-foreground)]">Loading settings...</div>;
+    setDisplayName(preferences.displayName);
+    setGeminiKey(preferences.geminiApiKey || "");
+  }, [preferences]);
 
   const handleSaveProfile = async () => {
-    updatePreferences({ name: displayName });
+    updatePreferences({ displayName });
     await alert({ message: "Profile saved successfully." });
   };
 
@@ -61,21 +57,14 @@ export default function SettingsPage() {
   };
 
   const handleExport = () => {
-    const backup: Record<string, string> = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) {
-        backup[key] = localStorage.getItem(key) || "";
-      }
-    }
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const data = localStorage.getItem('uc-journal-data');
+    if (!data) return;
+    const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    a.download = `uc-trade-journal-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
+    a.download = \`uc-journal-backup-\${new Date().toISOString().split('T')[0]}.json\`;
     a.click();
-    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
@@ -86,15 +75,13 @@ export default function SettingsPage() {
     reader.onload = async (event) => {
       try {
         const content = event.target?.result as string;
-        const backup = JSON.parse(content);
+        JSON.parse(content); // Validate JSON
         const ok = await confirm({
           message: "Are you sure you want to restore from this backup? This will overwrite ALL your current data.",
           danger: true
         });
         if (ok) {
-          for (const key in backup) {
-            localStorage.setItem(key, backup[key]);
-          }
+          localStorage.setItem('uc-journal-data', content);
           window.location.reload();
         }
       } catch (err) {
@@ -109,16 +96,16 @@ export default function SettingsPage() {
     setModalMode("add");
     setAccName("");
     setAccBalance("");
-    setErrors({});
+    setErrors({ accName: false, accBalance: false });
     setIsAccountModalOpen(true);
   };
 
-  const openEditAccount = (acc: Account) => {
+  const openEditAccount = (acc: any) => {
     setModalMode("edit");
     setEditingAccountId(acc.id);
     setAccName(acc.name);
     setAccBalance(acc.balance.toString());
-    setErrors({});
+    setErrors({ accName: false, accBalance: false });
     setIsAccountModalOpen(true);
   };
 
@@ -167,13 +154,13 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left font-medium text-sm ${
+                  className={\`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left font-medium text-sm \${
                     isActive 
                       ? 'bg-[var(--primary)]/10 text-[var(--primary)] font-bold' 
                       : 'text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 hover:text-[var(--foreground)]'
-                  }`}
+                  }\`}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}`} />
+                  <Icon className={\`w-5 h-5 \${isActive ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}\`} />
                   {tab.label}
                 </button>
               );
@@ -194,10 +181,10 @@ export default function SettingsPage() {
                 <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">Profile picture</h3>
                 <div className="flex items-center gap-6">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[var(--primary)] to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                    {displayName ? displayName.charAt(0).toUpperCase() : 'T'}
+                    {displayName.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h4 className="font-bold text-[var(--foreground)]">{displayName || "Trader"}</h4>
+                    <h4 className="font-bold text-[var(--foreground)]">{displayName}</h4>
                     <p className="text-xs text-[var(--muted-foreground)] mb-3">Trader</p>
                     <div className="flex gap-3">
                       <button className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white text-xs font-semibold rounded-lg transition-colors">
@@ -266,17 +253,17 @@ export default function SettingsPage() {
                   <div className="grid grid-cols-2 gap-4 max-w-sm">
                     <button 
                       onClick={() => updatePreferences({ theme: 'dark' })}
-                      className={`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all ${preferences.theme === 'dark' ? 'border-[var(--primary)] bg-[var(--primary)]/5' : 'border-[var(--border)] hover:border-[var(--muted-foreground)]/50'}`}
+                      className={\`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all \${preferences.theme === 'dark' ? 'border-[var(--primary)] bg-[var(--primary)]/5' : 'border-[var(--border)] hover:border-[var(--muted-foreground)]/50'}\`}
                     >
-                      <Moon className={`w-8 h-8 mb-3 ${preferences.theme === 'dark' ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}`} />
-                      <span className={`font-medium ${preferences.theme === 'dark' ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`}>Dark Theme</span>
+                      <Moon className={\`w-8 h-8 mb-3 \${preferences.theme === 'dark' ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}\`} />
+                      <span className={\`font-medium \${preferences.theme === 'dark' ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}\`}>Dark Theme</span>
                     </button>
                     <button 
                       onClick={() => updatePreferences({ theme: 'light' })}
-                      className={`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all ${preferences.theme === 'light' ? 'border-[var(--primary)] bg-[var(--primary)]/5' : 'border-[var(--border)] hover:border-[var(--muted-foreground)]/50'}`}
+                      className={\`flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all \${preferences.theme === 'light' ? 'border-[var(--primary)] bg-[var(--primary)]/5' : 'border-[var(--border)] hover:border-[var(--muted-foreground)]/50'}\`}
                     >
-                      <Sun className={`w-8 h-8 mb-3 ${preferences.theme === 'light' ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}`} />
-                      <span className={`font-medium ${preferences.theme === 'light' ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`}>Light Theme</span>
+                      <Sun className={\`w-8 h-8 mb-3 \${preferences.theme === 'light' ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}\`} />
+                      <span className={\`font-medium \${preferences.theme === 'light' ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}\`}>Light Theme</span>
                     </button>
                   </div>
                 </div>
@@ -385,17 +372,15 @@ export default function SettingsPage() {
                 <div className="p-6 rounded-2xl bg-[var(--primary)]/10 border border-[var(--primary)]/20 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
                     <h4 className="text-base font-bold text-[var(--foreground)]">Seed Demo Data</h4>
-                    <p className="text-sm text-[var(--muted-foreground)] mt-1">Load realistic mock trades into the ACTIVE account.</p>
+                    <p className="text-sm text-[var(--muted-foreground)] mt-1">Load 25 realistic mock trades into the ACTIVE account to see how the dashboard looks.</p>
                   </div>
                   <button 
                     onClick={async () => {
                       const ok = await confirm({
-                        message: "This will inject mock trades into your currently active account. Are you sure?",
+                        message: "This will inject 25 mock trades into your currently active account. Are you sure?",
                       });
                       if (ok) {
-                        seedMockData();
-                        seedMockJournal();
-                        seedMockNotebook();
+                        seedDemoData();
                         await alert({ message: "Demo data injected successfully!" });
                       }
                     }}
@@ -486,18 +471,18 @@ export default function SettingsPage() {
                               return;
                             }
                             const ok = await confirm({
-                              message: `Are you sure you want to delete ${acc.name}?`,
+                              message: \`Are you sure you want to delete \${acc.name}?\`,
                               danger: true
                             });
                             if (ok) {
                               deleteAccount(acc.id);
                             }
                           }}
-                          className={`p-2.5 rounded-lg transition-all border shadow-sm ${
+                          className={\`p-2.5 rounded-lg transition-all border shadow-sm \${
                             accounts.length === 1 
                               ? 'border-[var(--border)] text-[var(--muted-foreground)] bg-[var(--background)] cursor-not-allowed opacity-50' 
                               : 'border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--loss)] bg-[var(--background)] hover:bg-[var(--loss)]/10 hover:border-[var(--loss)]/30'
-                          }`}
+                          }\`}
                           title="Delete Account"
                           disabled={accounts.length === 1}
                         >
@@ -538,7 +523,7 @@ export default function SettingsPage() {
                     if (errors.accName) setErrors({ ...errors, accName: false });
                   }}
                   placeholder="e.g. Prop Firm Phase 1"
-                  className={`w-full bg-[var(--background)] border rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all ${errors.accName ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}`}
+                  className={\`w-full bg-[var(--background)] border rounded-xl px-4 py-3 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all \${errors.accName ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}\`}
                   autoFocus
                 />
                 {errors.accName && <p className="text-xs text-[var(--loss)] mt-2 font-medium flex items-center gap-1"><Info className="w-3 h-3"/> Account name is required</p>}
@@ -555,7 +540,7 @@ export default function SettingsPage() {
                       if (errors.accBalance) setErrors({ ...errors, accBalance: false });
                     }}
                     placeholder="10000"
-                    className={`w-full bg-[var(--background)] border rounded-xl pl-9 pr-4 py-3 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all ${errors.accBalance ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}`}
+                    className={\`w-full bg-[var(--background)] border rounded-xl pl-9 pr-4 py-3 text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all \${errors.accBalance ? '!border-[var(--loss)]/50' : 'border-[var(--border)]'}\`}
                   />
                 </div>
                 {errors.accBalance && <p className="text-xs text-[var(--loss)] mt-2 font-medium flex items-center gap-1"><Info className="w-3 h-3"/> Valid balance is required</p>}
@@ -582,3 +567,7 @@ export default function SettingsPage() {
     </div>
   );
 }
+`
+
+fs.writeFileSync('src/app/settings/page.tsx', code);
+console.log("Written settings page");
