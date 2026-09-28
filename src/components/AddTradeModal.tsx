@@ -338,7 +338,7 @@ export default function AddTradeModal({ isOpen, onClose, onAddTrade, onEditTrade
                         { inlineData: { mimeType: file.type, data: base64Data } }
                       ]
                     }],
-                    generationConfig: { response_mimeType: "application/json" }
+                    generationConfig: { responseMimeType: "application/json" }
                   })
                 });
                 
