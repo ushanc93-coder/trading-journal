@@ -310,13 +310,11 @@ export default function AddTradeModal({ isOpen, onClose, onAddTrade, onEditTrade
     data.append("file", file);
     
     try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: data,
-      });
-      const result = await res.json();
-      if (result.success && result.url) {
-        setFormData(prev => ({ ...prev, images: [...prev.images, result.url] }));
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        const base64String = reader.result as string;
+        setFormData(prev => ({ ...prev, images: [...prev.images, base64String] }));
         
         const apiKey = preferences.geminiApiKey;
         if (apiKey) {
@@ -330,7 +328,7 @@ export default function AddTradeModal({ isOpen, onClose, onAddTrade, onEditTrade
               let aiRes: any;
               let retries = 3;
               while (retries > 0) {
-                aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+                aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
@@ -418,7 +416,7 @@ export default function AddTradeModal({ isOpen, onClose, onAddTrade, onEditTrade
             setIsScanning(false);
           }, 1500);
         }
-      }
+      };
     } catch (err) {
       console.error(err);
       await alert({ message: "Failed to upload image.", danger: true });
