@@ -154,8 +154,16 @@ export default function EditJournalModal({ isOpen, onClose, onSave, entry }: Edi
                 return (
                   <button 
                     key={rule.key}
-                    onClick={() => setFormData({...formData, [rule.key]: !val})}
-                    className={`flex flex-col items-center justify-center p-2 rounded border transition-colors ${
+                    type="button"
+                    onClick={() => {
+                      const newVal = !val;
+                      const nextData = { ...formData, [rule.key]: newVal };
+                      const allPassed = nextData.entryRules && nextData.max2Trades && nextData.maxRisk && nextData.maxTp && nextData.maxProfit;
+                      const isWin = formData.result.includes("Win");
+                      const nextResult = allPassed ? (isWin ? "Good Win" : "Good Loss") : (isWin ? "Bad Win" : "Bad Loss");
+                      setFormData({ ...nextData, result: nextResult as any });
+                    }}
+                    className={`flex flex-col items-center justify-center p-2 rounded border transition-colors cursor-pointer ${
                       val 
                         ? 'bg-[var(--win)]/20 text-[var(--win)] border-[var(--win)]/30' 
                         : 'bg-[var(--loss)]/20 text-[var(--loss)] border-[var(--loss)]/30'

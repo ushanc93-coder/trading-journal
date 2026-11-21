@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forex Clock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&family=JetBrains+Mono:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 6px;
+    }
+    .widget-container {
+      width: 100%;
+      max-width: 325px;
+      background: #FFFFFF;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 22px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      padding: 12px;
+      color: #0F172A;
+    }
+    @media (prefers-color-scheme: dark) {
+      .widget-container {
+        background: #151c2c;
+        border-color: rgba(255, 255, 255, 0.08);
+        color: #F8FAFC;
+      }
+    }
+    .clock-casing {
+      background: linear-gradient(135deg, #4338CA 0%, #4F39F6 50%, #3730A3 100%);
+      border: 1px solid rgba(165, 180, 252, 0.35);
+      border-radius: 16px;
+      padding: 10px 12px 8px 12px;
+      color: white;
+      box-shadow: 0 8px 20px -4px rgba(67, 56, 202, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .dot-live {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #34D399;
+      box-shadow: 0 0 8px #34D399;
+      animation: pulse 1.8s infinite;
+    }
+    .dot-sb {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #FCD34D;
+      box-shadow: 0 0 8px #FCD34D;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.15); }
+    }
+    .status-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-btn {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: white;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+    .badge-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+    .icon-btn {
+      padding: 3px 5px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: white;
+      cursor: pointer;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+    .close-btn:hover {
+      background: #EF4444;
+      border-color: #EF4444;
+    }
+    .counter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 2px;
+    }
+    .digit-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+    .digit-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -1px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    .digit-label {
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #C7D2FE;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+    .colon-col {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-bottom: 12px;
+      opacity: 0.8;
+    }
+    .colon-dot {
+      width: 4.5px;
+      height: 4.5px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+    }
+    .hero-card {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid #A7F3D0;
+      background: #ECFDF5;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      transition: all 0.3s;
+    }
+    .hero-card.sb {
+      border: 2px solid #FCD34D;
+      background: #FFFBEB;
+    }
+    .hero-card.off {
+      border: 1px solid #C7D2FE;
+      background: #EEF2FF;
+    }
+    @media (prefers-color-scheme: dark) {
+      .hero-card { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.35); }
+      .hero-card.sb { background: rgba(245, 158, 11, 0.14); border-color: rgba(245, 158, 11, 0.45); }
+      .hero-card.off { background: rgba(79, 70, 229, 0.12); border-color: rgba(99, 102, 241, 0.35); }
+    }
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hero-title {
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .hero-badge {
+      font-size: 9px;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: #059669;
+      color: white;
+    }
+    .hero-badge.sb { background: #D97706; }
+    .hero-badge.off { background: #4F39F6; }
+    .hero-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+    .timer-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 7px;
+      background: white;
+      border: 1px solid #A7F3D0;
+      color: #047857;
+    }
+    @media (prefers-color-scheme: dark) {
+      .timer-pill { background: rgba(0, 0, 0, 0.4); color: #34D399; border-color: rgba(16, 185, 129, 0.4); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="widget-container">
+    <!-- Main Clock Card -->
+    <div class="clock-casing">
+      <div class="status-bar">
+        <div class="status-left">
+          <span id="dot" class="dot-live"></span>
+          <span id="session-name">London Open</span>
+        </div>
+        <div class="status-actions">
+          <span id="ampm-badge" class="badge-btn">PM</span>
+          <button id="tz-btn" class="badge-btn" title="Toggle Local / NY Time">LOC ⇄</button>
+          <button id="sound-btn" class="icon-btn" title="Toggle Sound Alerts">🔔</button>
+          <button id="pip-btn" class="icon-btn" title="Float Always on Top (Picture-in-Picture)">📌</button>
+          <button id="close-btn" class="icon-btn close-btn" title="Close & Return to Dashboard">✕</button>
+        </div>
+      </div>
+
+      <!-- Sliding Counter Row -->
+      <div class="counter-row">
+        <div class="digit-col">
+          <div id="disp-h" class="digit-val">00</div>
+          <div class="digit-label">HOURS</div>
+        </div>
+        <div class="colon-col">
+          <span class="colon-dot"></span>
+          <span class="colon-dot"></span>
+        </div>
+        <div class="digit-col">
+          <div id="disp-m" class="digit-val">00</div>
+          <div class="digit-label">MINUTES</div>
+        </div>
+        <div class="colon-col">
+          <span class="colon-dot"></span>
+          <span class="colon-dot"></span>
+        </div>
+        <div class="digit-col">
+          <div id="disp-s" class="digit-val">00</div>
+          <div class="digit-label">SECONDS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Hero Card -->
+    <div id="hero-card" class="hero-card">
+      <div class="hero-top">
+        <span id="hero-title" class="hero-title">🏛️ London Open</span>
+        <span id="hero-badge" class="hero-badge">ACTIVE</span>
+      </div>
+      <div class="hero-bottom">
+        <span id="target-event" style="font-weight:700; color:#475569;">London ends in:</span>
+        <span id="countdown-val" class="timer-pill">00:00:00</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let useNyTime = false;
+    let soundEnabled = false;
+    let prevSb = false;
+    let prevLive = false;
+
+    // Web Audio Chime
+    function playChime(isSb = false) {
+      if (!soundEnabled) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        const now = ctx.currentTime;
+        if (isSb) {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(587.33, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+          osc.start(now);
+          osc.stop(now + 0.8);
+        } else {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+          osc.start(now);
+          osc.stop(now + 0.6);
+        }
+      } catch (e) {}
+    }
+
+    function update() {
+      const now = new Date();
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        hour12: false,
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric'
+      }).formatToParts(now);
+
+      const h = parseInt(parts.find(p => p.type === 'hour')?.value || "0", 10);
+      const m = parseInt(parts.find(p => p.type === 'minute')?.value || "0", 10);
+      const s = parseInt(parts.find(p => p.type === 'second')?.value || "0", 10);
+      const totalSec = h * 3600 + m * 60 + s;
+
+      const toSec = (hours, mins = 0) => hours * 3600 + mins * 60;
+      const fmtTimer = (secs) => {
+        if (secs < 0) secs += 86400;
+        const hh = Math.floor(secs / 3600);
+        const mm = Math.floor((secs % 3600) / 60);
+        const ss = Math.floor(secs % 60);
+        return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+      };
+
+      let sessionName = "Null Time";
+      let isLive = false;
+      let isSilverBullet = false;
+      let targetEvent = "";
+      let targetSec = 0;
+      let bulletName = "";
+
+      if (totalSec >= toSec(0, 0) && totalSec < toSec(2, 0)) {
+        sessionName = "Null Time"; targetEvent = "London Open in"; targetSec = toSec(2, 0);
+      } else if (totalSec >= toSec(2, 0) && totalSec < toSec(3, 0)) {
+        sessionName = "London Open"; isLive = true; targetEvent = "London SB in"; targetSec = toSec(3, 0);
+      } else if (totalSec >= toSec(3, 0) && totalSec < toSec(4, 0)) {
+        sessionName = "London Open"; bulletName = "London Silver Bullet"; isLive = true; isSilverBullet = true; targetEvent = "London SB ends in"; targetSec = toSec(4, 0);
+      } else if (totalSec >= toSec(4, 0) && totalSec < toSec(5, 0)) {
+        sessionName = "London Open"; isLive = true; targetEvent = "London ends in"; targetSec = toSec(5, 0);
+      } else if (totalSec >= toSec(5, 0) && totalSec < toSec(7, 0)) {
+        sessionName = "Null Time"; targetEvent = "NY AM in"; targetSec = toSec(7, 0);
+      } else if (totalSec >= toSec(7, 0) && totalSec < toSec(10, 0)) {
+        sessionName = "New York AM"; isLive = true; targetEvent = "NY AM SB in"; targetSec = toSec(10, 0);
+      } else if (totalSec >= toSec(10, 0) && totalSec < toSec(11, 0)) {
+        sessionName = "New York AM"; bulletName = "NY AM Silver Bullet"; isLive = true; isSilverBullet = true; targetEvent = "NY AM SB ends in"; targetSec = toSec(11, 0);
+      } else if (totalSec >= toSec(11, 0) && totalSec < toSec(13, 0)) {
+        sessionName = "New York AM"; isLive = true; targetEvent = "NY PM in"; targetSec = toSec(13, 0);
+      } else if (totalSec >= toSec(13, 0) && totalSec < toSec(14, 0)) {
+        sessionName = "New York PM"; isLive = true; targetEvent = "NY PM SB in"; targetSec = toSec(14, 0);
+      } else if (totalSec >= toSec(14, 0) && totalSec < toSec(15, 0)) {
+        sessionName = "New York PM"; bulletName = "NY PM Silver Bullet"; isLive = true; isSilverBullet = true; targetEvent = "NY PM SB ends in"; targetSec = toSec(15, 0);
+      } else if (totalSec >= toSec(15, 0) && totalSec < toSec(16, 0)) {
+        sessionName = "New York PM"; isLive = true; targetEvent = "NY Session ends in"; targetSec = toSec(16, 0);
+      } else if (totalSec >= toSec(16, 0) && totalSec < toSec(20, 0)) {
+        sessionName = "Null Time"; targetEvent = "Asian Session in"; targetSec = toSec(20, 0);
+      } else if (totalSec >= toSec(20, 0) && totalSec < toSec(21, 0)) {
+        sessionName = "Asian Session"; bulletName = "Asian Silver Bullet"; isLive = true; isSilverBullet = true; targetEvent = "Asian SB ends in"; targetSec = toSec(21, 0);
+      } else {
+        sessionName = "Asian Session"; isLive = true; targetEvent = "Asian Session ends in"; targetSec = toSec(24, 0);
+      }
+
+      if (isSilverBullet && !prevSb) playChime(true);
+      else if (isLive && !prevLive) playChime(false);
+      prevSb = isSilverBullet;
+      prevLive = isLive;
+
+      // Format display time
+      const timeFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: useNyTime ? 'America/New_York' : undefined,
+        hour12: true,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      const dParts = timeFormatter.formatToParts(now);
+      const dH = dParts.find(p => p.type === 'hour')?.value || "12";
+      const dM = dParts.find(p => p.type === 'minute')?.value || "00";
+      const dS = dParts.find(p => p.type === 'second')?.value || "00";
+      const rawAmpm = dParts.find(p => p.type === 'dayPeriod')?.value;
+      const dAmpm = rawAmpm ? rawAmpm.toUpperCase() : (now.getHours() >= 12 ? "PM" : "AM");
+
+      document.getElementById("disp-h").innerText = dH;
+      document.getElementById("disp-m").innerText = dM;
+      document.getElementById("disp-s").innerText = dS;
+      document.getElementById("ampm-badge").innerText = dAmpm;
+
+      const dot = document.getElementById("dot");
+      const sessLabel = document.getElementById("session-name");
+      const heroCard = document.getElementById("hero-card");
+      const heroTitle = document.getElementById("hero-title");
+      const heroBadge = document.getElementById("hero-badge");
+      const targetLabel = document.getElementById("target-event");
+      const countdownVal = document.getElementById("countdown-val");
+
+      if (isSilverBullet) {
+        dot.className = "dot-sb";
+        sessLabel.innerText = "Silver Bullet";
+        heroCard.className = "hero-card sb";
+        heroTitle.innerHTML = `⚡ ${bulletName}`;
+        heroBadge.className = "hero-badge sb";
+        heroBadge.innerText = "SB LIVE";
+      } else if (isLive) {
+        dot.className = "dot-live";
+        sessLabel.innerText = sessionName;
+        heroCard.className = "hero-card";
+        heroTitle.innerHTML = `🏛️ ${sessionName}`;
+        heroBadge.className = "hero-badge";
+        heroBadge.innerText = "ACTIVE";
+      } else {
+        dot.className = "dot-live";
+        dot.style.background = "#818CF8";
+        sessLabel.innerText = "Off-Hours";
+        heroCard.className = "hero-card off";
+        heroTitle.innerHTML = `🌙 Null Time`;
+        heroBadge.className = "hero-badge off";
+        heroBadge.innerText = "OFF-HOURS";
+      }
+
+      targetLabel.innerText = targetEvent + ":";
+      countdownVal.innerText = fmtTimer(targetSec - totalSec);
+    }
+
+    document.getElementById("tz-btn").addEventListener("click", () => {
+      useNyTime = !useNyTime;
+      document.getElementById("tz-btn").innerText = useNyTime ? "NY ⇄" : "LOC ⇄";
+      update();
+    });
+
+    document.getElementById("sound-btn").addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById("sound-btn").innerText = soundEnabled ? "🔊" : "🔇";
+      if (soundEnabled) playChime(true);
+    });
+
+    // Close button: Focus or open main trading journal app, then close
+    document.getElementById("close-btn").addEventListener("click", () => {
+      try {
+        if (window.opener && !window.opener.closed) {
+          window.opener.focus();
+        } else {
+          window.open("http://localhost:3000", "_blank");
+        }
+      } catch (e) {
+        window.open("http://localhost:3000", "_blank");
+      }
+      window.close();
+    });
+
+    // Picture in Picture Always on Top
+    document.getElementById("pip-btn").addEventListener("click", async () => {
+      if ('documentPictureInPicture' in window) {
+        try {
+          const pipWin = await window.documentPictureInPicture.requestWindow({ width: 325, height: 250 });
+          [...document.styleSheets].forEach(s => {
+            try {
+              const rules = [...s.cssRules].map(r => r.cssText).join("\n");
+              const style = document.createElement("style");
+              style.textContent = rules;
+              pipWin.document.head.appendChild(style);
+            } catch (e) {
+              if (s.href) {
+                const link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = s.href;
+                pipWin.document.head.appendChild(link);
+              }
+            }
+          });
+          pipWin.document.body.className = document.body.className;
+          pipWin.document.body.appendChild(document.querySelector(".widget-container").cloneNode(true));
+          pipWin.document.title = "Forex Clock";
+          
+          pipWin.document.getElementById("close-btn").addEventListener("click", () => {
+            window.focus();
+            pipWin.close();
+          });
+        } catch (e) {
+          alert("Could not open PiP: " + e.message);
+        }
+      }
+    });
+
+    setInterval(update, 1000);
+    update();
+  </script>
+</body>
+</html>

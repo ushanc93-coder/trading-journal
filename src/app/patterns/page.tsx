@@ -38,37 +38,37 @@ export default function PatternsPage() {
 
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto h-full flex flex-col">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-[var(--foreground)] tracking-tight flex items-center">
-            <Shapes className="w-6 h-6 mr-2 text-[var(--primary)]" />
+          <h2 className="text-xl font-bold text-[var(--foreground)] tracking-tight flex items-center">
+            <Shapes className="w-5 h-5 mr-2 text-[var(--primary)]" />
             Chart Patterns Library
           </h2>
-          <p className="text-[var(--muted-foreground)] mt-1">
-            An auto-generated educational gallery of your best setups, identified by AI.
+          <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+            Auto-catalogued gallery of your historical trade setups and patterns.
           </p>
         </div>
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
           <input 
-            type="text"
+            type="text" 
             placeholder="Search patterns or symbols..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-[var(--card)] border border-[var(--border)] rounded-3xl pl-9 pr-4 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--primary)] w-64"
+            className="bg-[var(--card)] border border-[var(--border)] rounded-full pl-8.5 pr-3 py-1.5 text-xs text-[var(--foreground)] focus:outline-none focus:ring-1 focus:ring-indigo-500 w-56 shadow-xs"
           />
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {patternTabs.map(pattern => (
           <button
             key={pattern}
             onClick={() => setActivePattern(pattern)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
+            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all border cursor-pointer ${
               activePattern === pattern
-                ? 'bg-[var(--primary)]/20 text-indigo-300 border-[var(--primary)]/50'
-                : 'bg-[var(--card)]/50 text-[var(--muted-foreground)] border-[var(--border)] hover:bg-[var(--muted)]'
+                ? 'bg-[var(--primary)] text-white border-[var(--primary)] shadow-xs'
+                : 'bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)] hover:bg-[var(--muted)]/50'
             }`}
           >
             {pattern}
@@ -77,19 +77,19 @@ export default function PatternsPage() {
       </div>
 
       {displayTrades.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center bg-[var(--card)]/20 border border-[var(--border)] rounded-3xl p-12 text-center">
-          <div className="w-16 h-16 bg-[var(--card)] rounded-full flex items-center justify-center mb-4">
-            <ImageIcon className="w-8 h-8 text-[var(--muted-foreground)]" />
+        <div className="flex-1 flex flex-col items-center justify-center neumorphic-card p-10 text-center">
+          <div className="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-3">
+            <ImageIcon className="w-6 h-6 text-indigo-500" />
           </div>
-          <h3 className="text-lg font-medium text-[var(--foreground)] mb-2">No Patterns Found</h3>
-          <p className="text-[var(--muted-foreground)] max-w-md">
+          <h3 className="text-sm font-bold text-[var(--foreground)] mb-1">No Patterns Found</h3>
+          <p className="text-xs text-[var(--muted-foreground)] max-w-md leading-relaxed">
             Save a trade with a chart screenshot. The AI will automatically scan it and tag classic patterns here for you to study later.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-12">
           {displayTrades.map(trade => (
-            <div key={trade.id} className="bg-[#111115] border border-[var(--border)] rounded-3xl overflow-hidden hover:border-[var(--primary)]/30 transition-colors group flex flex-col">
+            <div key={trade.id} className="neumorphic-card neumorphic-card-hover overflow-hidden group flex flex-col">
               <div 
                 className="aspect-video relative overflow-hidden bg-[var(--card)] cursor-pointer"
                 onClick={() => setViewingImage(trade.images![0])}
@@ -100,33 +100,37 @@ export default function PatternsPage() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <ExternalLink className="w-6 h-6 text-[var(--foreground)]" />
+                  <ExternalLink className="w-5 h-5 text-white" />
                 </div>
               </div>
               <div className="p-4 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-3">
+                <div className="flex justify-between items-start mb-2.5">
                   <div>
-                    <div className="font-bold text-[var(--foreground)] flex items-center">
+                    <div className="font-bold text-xs text-[var(--foreground)] flex items-center">
                       {trade.symbol}
-                      <span className={`ml-2 text-[10px] uppercase px-1.5 py-0.5 rounded font-bold ${
-                        trade.direction === 'Long' ? 'bg-[var(--win)]/20 text-[var(--win)]' : 'bg-[var(--loss)]/20 text-[var(--loss)]'
+                      <span className={`ml-2 text-[9px] uppercase px-1.5 py-0.2 rounded-full font-semibold ${
+                        trade.direction === 'Long' ? 'bg-[var(--win)]/15 text-[var(--win)]' : 'bg-[var(--loss)]/15 text-[var(--loss)]'
                       }`}>
                         {trade.direction}
                       </span>
                     </div>
-                    <div className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                    <div className="text-[11px] text-[var(--muted-foreground)] mt-0.5">
                       {format(parseISO(trade.date), 'MMM d, yyyy')} • {trade.session}
                     </div>
                   </div>
-                  <div className={`text-sm font-bold ${trade.status === 'Win' ? 'text-[var(--win)]' : trade.status === 'Loss' ? 'text-[var(--loss)]' : 'text-[var(--muted-foreground)]'}`}>
-                    {trade.netPnL > 0 ? '+' : ''}{trade.netPnL}
+                  <div className={`text-xs font-bold font-mono tabular-nums ${trade.status === 'Win' ? 'text-[var(--win)]' : trade.status === 'Loss' ? 'text-[var(--loss)]' : 'text-[var(--muted-foreground)]'}`}>
+                    {trade.netPnL > 0 
+                      ? `+$${trade.netPnL.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` 
+                      : trade.netPnL < 0 
+                      ? `-$${Math.abs(trade.netPnL).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` 
+                      : `$0.00`}
                   </div>
                 </div>
                 
                 <div className="mt-auto">
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {trade.patterns?.map((pattern, i) => (
-                      <span key={i} className="text-xs bg-[var(--primary)]/10 text-indigo-300 px-2 py-1 rounded-3xl border border-[var(--primary)]/20">
+                      <span key={i} className="text-[10px] bg-[var(--primary)]/10 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full border border-[var(--primary)]/20 font-semibold">
                         {pattern}
                       </span>
                     ))}

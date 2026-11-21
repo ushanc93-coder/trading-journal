@@ -7,9 +7,12 @@ import { Trade } from "./mock-data";
 type TradesContextType = {
   trades: Trade[];
   addTrade: (trade: Omit<Trade, "id">) => void;
+  addMultipleTrades: (trades: Omit<Trade, "id">[]) => void;
   updateTrade: (id: string, updatedTrade: Partial<Trade>) => void;
   deleteTrade: (id: string) => void;
   clearAllTrades: () => void;
+  seedMockData: () => void;
+  setAllTrades: (trades: Trade[]) => void;
   isLoaded: boolean;
 };
 

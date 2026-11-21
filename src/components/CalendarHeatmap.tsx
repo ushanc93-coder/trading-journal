@@ -36,14 +36,14 @@ export default function CalendarHeatmap({ trades }: CalendarHeatmapProps) {
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="bg-[var(--card)] rounded-3xl border border-[var(--border)] flex flex-col h-full min-h-[500px]">
-      <div className="flex items-center p-4 border-b border-[var(--border)]">
-        <h2 className="text-lg font-bold text-[var(--foreground)] mr-4">{format(currentDate, 'MMMM yyyy')}</h2>
-        <div className="flex space-x-1">
-          <button onClick={prevMonth} className="p-1 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+    <div className="neumorphic-card flex flex-col h-full min-h-[500px] overflow-hidden">
+      <div className="flex items-center justify-between p-4 px-5 border-b border-[var(--border)] bg-slate-50/50 dark:bg-white/[0.02]">
+        <h2 className="text-base sm:text-lg font-bold text-[var(--foreground)] tracking-tight">{format(currentDate, 'MMMM yyyy')}</h2>
+        <div className="flex items-center gap-1.5">
+          <button onClick={prevMonth} className="w-7 h-7 flex items-center justify-center rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--primary)] transition-all cursor-pointer shadow-2xs">
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <button onClick={nextMonth} className="p-1 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+          <button onClick={nextMonth} className="w-7 h-7 flex items-center justify-center rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--primary)] transition-all cursor-pointer shadow-2xs">
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -107,8 +107,12 @@ export default function CalendarHeatmap({ trades }: CalendarHeatmapProps) {
                 
                 {dayTrades.length > 0 && (
                   <div className="text-center mt-auto mb-1">
-                    <div className={`font-bold text-sm ${textColor}`}>
-                      {totalPnL >= 0 ? '+' : ''}${totalPnL.toLocaleString()}
+                    <div className={`font-bold text-sm tabular-nums ${textColor}`}>
+                      {totalPnL > 0 
+                        ? `+$${totalPnL.toLocaleString()}` 
+                        : totalPnL < 0 
+                        ? `-$${Math.abs(totalPnL).toLocaleString()}` 
+                        : `$0`}
                     </div>
                     <div className={`text-[10px] font-medium ${subColor}`}>
                       {dayTrades.length} {dayTrades.length === 1 ? 'trade' : 'trades'}

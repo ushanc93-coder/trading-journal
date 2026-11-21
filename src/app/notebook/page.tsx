@@ -546,7 +546,7 @@ My Journal Entry:
               onChange={e => setEditTitle(e.target.value)}
               onBlur={handleSave}
               placeholder="Untitled"
-              className="bg-transparent text-5xl font-bold text-[var(--foreground)] focus:outline-none placeholder:text-[var(--muted-foreground)] w-full"
+              className="bg-transparent text-2xl sm:text-3xl font-semibold text-[var(--foreground)] focus:outline-none placeholder:text-[var(--muted-foreground)] w-full tracking-tight"
             />
           </div>
           
@@ -600,7 +600,7 @@ My Journal Entry:
             onChange={e => setEditContent(e.target.value)}
             onBlur={handleSave}
             placeholder="Write your thoughts here..."
-            className="flex-1 w-full bg-transparent text-lg text-[var(--foreground)] focus:outline-none resize-none leading-relaxed placeholder:text-[var(--muted-foreground)] min-h-[300px]"
+            className="flex-1 w-full bg-transparent text-sm sm:text-base text-[var(--foreground)] focus:outline-none resize-none leading-relaxed placeholder:text-[var(--muted-foreground)] min-h-[300px]"
           />
 
           <div className="mt-8 pt-8 border-t border-[var(--border)]/50">
@@ -621,8 +621,8 @@ My Journal Entry:
             </div>
 
             {aiSummary && (
-              <div className="bg-[var(--primary)]/10 border border-[var(--primary)]/30 p-6 rounded-3xl relative overflow-hidden">
-                <div className="relative z-10 prose dark:prose-invert prose-headings:text-[var(--foreground)] prose-p:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[var(--foreground)] max-w-none text-sm leading-relaxed">
+              <div className="bg-[var(--primary)]/10 border border-[var(--primary)]/30 p-4 rounded-lg relative overflow-hidden">
+                <div className="relative z-10 prose dark:prose-invert prose-headings:text-[var(--foreground)] prose-p:text-[var(--foreground)] prose-strong:text-[var(--foreground)] prose-li:text-[var(--foreground)] max-w-none text-xs leading-relaxed">
                   <ReactMarkdown>{aiSummary}</ReactMarkdown>
                 </div>
               </div>
@@ -661,14 +661,14 @@ My Journal Entry:
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-12">
+    <div className="max-w-[1400px] mx-auto space-y-8">
       {/* Header */}
-      <div className="flex flex-col gap-3 max-w-4xl">
-        <h2 className="text-3xl font-bold text-[var(--foreground)] tracking-tight flex items-center">
-          <Sparkles className="w-6 h-6 mr-3 text-[var(--primary)] flex-shrink-0" />
-          {motivationalQuote?.topic || "Daily Inspiration"}
+      <div className="flex flex-col gap-2 max-w-4xl">
+        <h2 className="text-xl font-bold text-[var(--foreground)] tracking-tight flex items-center">
+          <Sparkles className="w-5 h-5 mr-2 text-[var(--primary)] flex-shrink-0" />
+          {motivationalQuote?.topic || "Daily Market Insights"}
         </h2>
-        <div className="text-[var(--foreground)] text-lg leading-relaxed italic border-l-2 border-[var(--primary)]/50 pl-4 py-1">
+        <div className="text-[var(--foreground)] text-xs leading-relaxed italic border-l-2 border-[var(--primary)]/50 pl-3 py-0.5">
           {motivationalQuote ? (
             <ReactMarkdown>{motivationalQuote.text}</ReactMarkdown>
           ) : (
@@ -678,18 +678,18 @@ My Journal Entry:
       </div>
 
       {/* Category Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
         {CATEGORIES.map(cat => (
           <div 
             key={cat.name}
             onClick={() => setActiveCategory(cat.name)}
-            className={`relative h-40 rounded-3xl p-6 cursor-pointer overflow-hidden group transition-all duration-300 border hover:-translate-y-1 ${cat.glow} ${
-              activeCategory === cat.name ? `${cat.borderActive} ${cat.bgActive}` : `border-[var(--border)] bg-[var(--card)] ${cat.hoverBorder}`
+            className={`relative h-24 rounded-2xl p-4 cursor-pointer overflow-hidden group transition-all duration-200 border hover:-translate-y-0.5 ${cat.glow} ${
+              activeCategory === cat.name ? `${cat.borderActive} ${cat.bgActive} shadow-md` : `border-[var(--border)] bg-[var(--card)] ${cat.hoverBorder} shadow-xs`
             }`}
           >
             <div className="relative h-full flex flex-col justify-end">
-              <h3 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">{cat.name}</h3>
-              <p className={`text-sm mt-1 font-medium ${activeCategory === cat.name ? cat.textActive : 'text-[var(--muted-foreground)]'}`}>
+              <h3 className="text-sm font-bold text-[var(--foreground)] tracking-tight">{cat.name}</h3>
+              <p className={`text-[11px] mt-0.5 font-semibold ${activeCategory === cat.name ? cat.textActive : 'text-[var(--muted-foreground)]'}`}>
                 {notes.filter(n => (n.category || "Educational") === cat.name).length} notes
               </p>
             </div>
@@ -698,32 +698,32 @@ My Journal Entry:
       </div>
 
       {/* Overview Table */}
-      <div className="bg-[var(--card)] rounded-3xl border border-[var(--border)] shadow-xl shadow-black/5 pb-4">
-        <div className="px-8 py-5 border-b border-[var(--border)] bg-[var(--card)]/30 flex justify-between items-center rounded-t-3xl">
+      <div className="neumorphic-card overflow-hidden pb-3">
+        <div className="px-5 py-3.5 border-b border-[var(--border)] bg-slate-50/50 dark:bg-white/[0.02] flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <LayoutGrid className="w-5 h-5 text-[var(--muted-foreground)]" />
-            <h3 className="text-lg font-semibold text-[var(--foreground)]">Overview: {activeCategory}</h3>
+            <LayoutGrid className="w-4 h-4 text-[var(--muted-foreground)]" />
+            <h3 className="text-xs font-bold text-[var(--foreground)]">Overview: {activeCategory}</h3>
           </div>
           <button 
             onClick={handleCreateNote}
-            className="flex items-center px-4 py-2 bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary)]/90 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+            className="flex items-center px-3.5 py-1.5 bg-[var(--primary)] text-white hover:bg-[var(--primary)]/90 rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-3.5 h-3.5 mr-1.5" />
             New Note
           </button>
         </div>
         
-        <div className="">
-            <div className="flex px-10 py-4 text-xs text-[var(--muted-foreground)] uppercase bg-[var(--card)]/20 border-b border-[var(--border)] mb-2">
-              <div className="w-1/2 font-semibold">Name</div>
-              <div className="w-1/4 font-semibold">Date</div>
-              <div className="w-1/4 font-semibold text-right">Actions</div>
+        <div>
+            <div className="flex px-5 py-2.5 text-[10.5px] text-[var(--muted-foreground)] uppercase bg-slate-50/70 dark:bg-white/[0.02] border-b border-[var(--border)] mb-1 font-bold tracking-wider">
+              <div className="w-1/2">Name</div>
+              <div className="w-1/4">Date</div>
+              <div className="w-1/4 text-right">Actions</div>
             </div>
             
-            <div className="space-y-2 px-4">
+            <div className="space-y-1 px-2">
               {filteredNotes.length === 0 ? (
-                <div className="py-12 text-center text-[var(--muted-foreground)]">
-                  <FileText className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                <div className="py-8 text-center text-[var(--muted-foreground)] text-xs">
+                  <FileText className="w-8 h-8 mx-auto mb-2 opacity-20" />
                   <p>No notes in {activeCategory}.</p>
                 </div>
               ) : (
@@ -731,21 +731,21 @@ My Journal Entry:
                   <div 
                     key={note.id} 
                     onClick={() => handleSelectNote(note)}
-                    className={`animate-slide-up flex items-center px-6 py-4 rounded-2xl transition-all duration-300 cursor-pointer group ${CATEGORIES.find(c => c.name === activeCategory)?.tableRowGlow || ''}`}
+                    className="flex items-center px-3 py-2 rounded-md hover:bg-[var(--muted)]/30 transition-colors cursor-pointer group"
                   >
                     <div className="w-1/2 flex items-center">
-                      <FileText className="w-4 h-4 mr-3 text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] transition-colors" />
-                      <span className="font-medium text-[var(--foreground)] group-hover:text-[var(--foreground)] transition-colors">{note.title}</span>
+                      <FileText className="w-3.5 h-3.5 mr-2 text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] transition-colors" />
+                      <span className="font-medium text-xs text-[var(--foreground)] group-hover:text-[var(--foreground)] transition-colors">{note.title}</span>
                     </div>
-                    <div className="w-1/4 text-sm text-[var(--muted-foreground)]">
-                      {format(parseISO(note.updatedAt), 'MMMM d, yyyy')}
+                    <div className="w-1/4 text-[11px] text-[var(--muted-foreground)] tabular-nums">
+                      {format(parseISO(note.updatedAt), 'MMM d, yyyy')}
                     </div>
                     <div className="w-1/4 flex justify-end">
                       <button 
                         onClick={(e) => handleDelete(note.id, e)}
-                        className="p-2 text-[var(--muted-foreground)] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-1 text-[var(--muted-foreground)] hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors cursor-pointer"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -757,7 +757,7 @@ My Journal Entry:
 
       {/* Monthly Calendar */}
       <div>
-        <h3 className="text-xl font-bold text-[var(--foreground)] tracking-tight mb-6 mt-12">Calendar</h3>
+        <h3 className="text-xs font-semibold text-[var(--foreground)] tracking-tight mb-3 mt-6">Calendar</h3>
         <NotesCalendar notes={notes} onNoteClick={handleSelectNote} />
       </div>
     </div>

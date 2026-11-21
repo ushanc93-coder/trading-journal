@@ -19,10 +19,23 @@ export type Trade = {
   mistake: "None" | "Moved SL" | "Over-leveraged" | "Early close";
   strategy: "Order Flow" | "Sharp Turn #1" | "Sharp Turn #2";
   notes: string;
-  status: "Win" | "Loss" | "Break Even";
+  status: "Win" | "Loss" | "Break Even" | "Pending";
+  balance?: number;
   images?: string[];
   patterns?: string[];
   aiReview?: string;
+  isPlanned?: boolean;
+  syncedFromStatement?: boolean;
+  syncedAt?: string;
+  confirmations?: string[];
+  confluenceScore?: number; // 0 to 100 marks (each category = 20)
+  playbookDetails?: {
+    biasFrames?: string[];
+    sbSession?: string;
+    pdaType?: string;
+    entry1m?: string;
+    smtType?: string;
+  };
 };
 
 export const MOCK_TRADES: Trade[] = [
@@ -38,8 +51,8 @@ export const MOCK_TRADES: Trade[] = [
   // Sept 4: Bad Win (Broke TP Rule! Closed early at 1.5R. Risk $50, won $75)
   { id: "mock-t4", ticket: "TKT-004", date: "2026-09-04", symbol: "US30", category: "Index", session: "New York", direction: "Long", entryPrice: 34000, exitPrice: 34030, lotSize: 2.5, sl: 33980, tp: 34040, netPnL: 75, rMultiple: 1.5, timePeriod: "None", rulesFollowed: true, emotion: "Anxious", mistake: "Early close", strategy: "Sharp Turn #2", notes: "Got scared of a pullback and closed before 2R.", status: "Win" },
   
-  // Sept 5: Bad Loss (Broke Entry Rules! Took a random trade)
-  { id: "mock-t5", ticket: "TKT-005", date: "2026-09-05", symbol: "USDJPY", category: "Forex", session: "Asian", direction: "Short", entryPrice: 150.5, exitPrice: 150.7, lotSize: 2.5, sl: 150.7, tp: 150.1, netPnL: -50, rMultiple: -1, timePeriod: "None", rulesFollowed: false, emotion: "Revenge", mistake: "None", strategy: "Order Flow", notes: "Traded out of boredom during Asian session.", status: "Loss", patterns: [] },
+  // Sept 4: Bad Loss (Broke Entry Rules! Took a random trade)
+  { id: "mock-t5", ticket: "TKT-005", date: "2026-09-04", symbol: "USDJPY", category: "Forex", session: "Asian", direction: "Short", entryPrice: 150.5, exitPrice: 150.7, lotSize: 2.5, sl: 150.7, tp: 150.1, netPnL: -50, rMultiple: -1, timePeriod: "None", rulesFollowed: false, emotion: "Revenge", mistake: "None", strategy: "Order Flow", notes: "Traded out of boredom during Asian session.", status: "Loss", patterns: [] },
   
   // Sept 8: Good Win (Risk $50, Reward $100, 2R)
   { id: "mock-t6", ticket: "TKT-006", date: "2026-09-08", symbol: "USDCAD", category: "Forex", session: "New York", direction: "Long", entryPrice: 1.350, exitPrice: 1.354, lotSize: 2.5, sl: 1.348, tp: 1.354, netPnL: 100, rMultiple: 2, timePeriod: "None", rulesFollowed: true, emotion: "Calm", mistake: "None", strategy: "Order Flow", notes: "Clean breakout and hit target exactly.", status: "Win", patterns: ["Break & Retest", "Order Block"] },
@@ -54,5 +67,8 @@ export const MOCK_TRADES: Trade[] = [
   { id: "mock-t9", ticket: "TKT-009", date: "2026-09-09", symbol: "GER40", category: "Index", session: "New York", direction: "Short", entryPrice: 16000, exitPrice: 16020, lotSize: 2.5, sl: 16020, tp: 15960, netPnL: -50, rMultiple: -1, timePeriod: "None", rulesFollowed: true, emotion: "Revenge", mistake: "None", strategy: "Sharp Turn #2", notes: "Over-traded. This was my 3rd trade today.", status: "Loss", patterns: ["Change of Character"] },
   
   // Sept 10: Bad Win (Broke TP Rule! Greed held for 3R instead of 2R)
-  { id: "mock-t10", ticket: "TKT-010", date: "2026-09-10", symbol: "XAGUSD", category: "Forex", session: "New York", direction: "Long", entryPrice: 23.0, exitPrice: 23.6, lotSize: 0.83, sl: 22.8, tp: 23.4, netPnL: 150, rMultiple: 3, timePeriod: "None", rulesFollowed: true, emotion: "FOMO", mistake: "None", strategy: "Order Flow", notes: "Moved my TP further than my plan allowed to try and get 3R.", status: "Win", patterns: ["Order Block"] }
+  { id: "mock-t10", ticket: "TKT-010", date: "2026-09-10", symbol: "XAGUSD", category: "Forex", session: "New York", direction: "Long", entryPrice: 23.0, exitPrice: 23.6, lotSize: 0.83, sl: 22.8, tp: 23.4, netPnL: 150, rMultiple: 3, timePeriod: "None", rulesFollowed: true, emotion: "FOMO", mistake: "None", strategy: "Order Flow", notes: "Moved my TP further than my plan allowed to try and get 3R.", status: "Win", patterns: ["Order Block"] },
+
+  // Sept 21: Clean Long Win (London/NY overlap)
+  { id: "mock-t11", ticket: "TKT-011", date: "2026-09-21", symbol: "USDJPY", category: "Forex", session: "London", direction: "Long", entryPrice: 145.20, exitPrice: 145.50, lotSize: 0.50, sl: 144.90, tp: 145.50, netPnL: 150, rMultiple: 2, timePeriod: "London silver bullet", rulesFollowed: true, emotion: "Calm", mistake: "None", strategy: "Order Flow", notes: "Clean bounce off support during London/NY overlap.", status: "Win" }
 ];

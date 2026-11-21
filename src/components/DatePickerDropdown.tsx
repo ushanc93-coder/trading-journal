@@ -1,3 +1,4 @@
+"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, parseISO, addMonths, subMonths, set } from "date-fns";
@@ -44,14 +45,14 @@ export default function DatePickerDropdown({ date, onChange }: { date: string, o
     <div className="relative" ref={containerRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-[var(--card)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm font-medium text-[var(--foreground)] flex items-center justify-between min-w-[200px] hover:border-[var(--primary)] transition-colors shadow-sm"
+        className="bg-[var(--card)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm font-medium text-[var(--foreground)] flex items-center justify-between hover:border-[var(--primary)] transition-colors shadow-sm"
       >
-        <span>{format(selectedDate, 'MMM d, yyyy h:mm a')}</span>
+        <span>{format(selectedDate, 'MMM d, yyyy')}</span>
         <CalendarIcon className="w-4 h-4 ml-2 text-[var(--muted-foreground)]" />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl z-50 animate-zoom-in p-4">
+        <div className="absolute top-full left-0 mt-2 w-72 bg-[var(--calendar-bg)] border border-[var(--calendar-border)] rounded-2xl shadow-2xl z-50 animate-zoom-in p-4">
           <div className="flex items-center justify-between mb-4">
             <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-1 hover:bg-[var(--muted)] rounded-lg transition-colors">
               <ChevronLeft className="w-5 h-5" />
